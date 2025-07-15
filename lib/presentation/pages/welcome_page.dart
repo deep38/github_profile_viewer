@@ -38,61 +38,63 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
-    return ResponsivePage(
-      header: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("GitHub", style: Theme.of(context).textTheme.displayLarge),
-            Text(
-              "PROFILE VIEWER",
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ],
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Form(
-          key: _formKey,
+    return Scaffold(
+      body: ResponsivePage(
+        header: Center(
           child: Column(
-            mainAxisAlignment: isLandscape
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
-                key: Key("usernameInputField"),
-                controller: _usernameTextEditingController,
-                validator: _usernameValidator,
-                decoration: InputDecoration(
-                  labelText: "Username",
-                  hintText: "Enter username",
-                  errorMaxLines: 2,
-                  border: OutlineInputBorder(),
-                  constraints: BoxConstraints(
-                    minWidth: min(
-                      500.0,
-                      max(MediaQuery.of(context).size.width, 36.0),
-                    ),
-                    maxWidth: 500,
-                  ),
-                ),
-              ),
-
-              if (isLandscape) SizedBox(height: 16),
-
-              ElevatedButton(
-                key: Key("usernameSubmitButton"),
-                onPressed: onSubmit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  fixedSize: Size.fromWidth(MediaQuery.of(context).size.width),
-                  maximumSize: Size.fromWidth(500),
-                ),
-                child: const Text("View profile"),
+              Text("GitHub", style: Theme.of(context).textTheme.displayLarge),
+              Text(
+                "PROFILE VIEWER",
+                style: Theme.of(context).textTheme.labelMedium,
               ),
             ],
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: isLandscape
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceBetween,
+              children: [
+                TextFormField(
+                  key: Key("usernameInputField"),
+                  controller: _usernameTextEditingController,
+                  validator: _usernameValidator,
+                  decoration: InputDecoration(
+                    labelText: "Username",
+                    hintText: "Enter username",
+                    errorMaxLines: 2,
+                    border: OutlineInputBorder(),
+                    constraints: BoxConstraints(
+                      minWidth: min(
+                        500.0,
+                        max(MediaQuery.of(context).size.width, 36.0),
+                      ),
+                      maxWidth: 500,
+                    ),
+                  ),
+                ),
+      
+                if (isLandscape) SizedBox(height: 16),
+      
+                ElevatedButton(
+                  key: Key("usernameSubmitButton"),
+                  onPressed: onSubmit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    fixedSize: Size.fromWidth(MediaQuery.of(context).size.width),
+                    maximumSize: Size.fromWidth(500),
+                  ),
+                  child: const Text("View profile"),
+                ),
+              ],
+            ),
           ),
         ),
       ),

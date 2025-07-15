@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
-import 'package:github_profile_viewer/presentation/components/error_indicator.dart';
+import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
+import 'package:github_profile_viewer/presentation/components/repo_card.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
+import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
+import 'package:github_profile_viewer/presentation/model/repo.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 
@@ -12,43 +15,45 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetX<ProfilePageController>(
-      initState: (state) {
-        final username = Get.parameters['username'];
-        if (username != null) {
-          state.controller?.loadUserData(username);
-        } else {
-          state.controller?.error.value = Exception("Username not provided");
-          state.controller?.userLoadingState.value = LoadingState.error;
-        }
-      },
-      builder: (controller) {
-        return switch (controller.userLoadingState.value) {
-          LoadingState.initial => SizedBox(),
-          LoadingState.loading => Center(child: CircularProgressIndicator.adaptive()),
-          LoadingState.error => ErrorIndicator(error: controller.error.value,),
-          LoadingState.success => _buildSuccessWidget(
-            context,
-            controller.user.value,
-          ),
-        };
-      },
+    return Scaffold(
+      body: GetX<ProfilePageController>(
+        initState: (state) {
+          final username = Get.parameters['username'];
+          if (username != null) {
+            state.controller?.loadUserData(username);
+          } else {
+            state.controller?.error.value = Exception("Username not provided");
+            state.controller?.userLoadingState.value = LoadingState.error;
+          }
+        },
+        builder: (controller) {
+          return LoadingStateWidget(
+            state: controller.userLoadingState.value,
+            success: ResponsivePage(
+              header: _buildUserProfileHeader(context, controller.user.value),
+              body: LoadingStateWidget(
+                state: controller.reposLoadingState.value,
+                success: _buildRepoList(context, controller.repos.value),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildSuccessWidget(BuildContext context, User? user) {
+  Widget _buildUserProfileHeader(BuildContext context, User? user) {
     if (user != null) {
-      return ResponsivePage(
-        header: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              foregroundImage: NetworkImage(user.avatarUrl),
-              radius: 56,
-              ),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            foregroundImage: NetworkImage(user.avatarUrl),
+            radius: 56,
+          ),
 
-            if (user.name != null)
+          if (user.name != null)
             Text(
               user.name!,
               style: Theme.of(
@@ -56,14 +61,14 @@ class ProfilePage extends StatelessWidget {
               ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
 
-            Text(
-              "@${user.username}",
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).hintColor,
-              ),
-            ),
+          Text(
+            "@${user.username}",
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+          ),
 
-            if(user.bio != null)
+          if (user.bio != null)
             Text(
               user.bio!,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -71,31 +76,21 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 36,),
+          const SizedBox(height: 36),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildStatWidget(
-                  context,
-                  "Followers",
-                  user.followers.toString(),
-                ),
-                _buildStatWidget(
-                  context,
-                  "Followings",
-                  user.following.toString(),
-                ),
-                _buildStatWidget(
-                  context,
-                  "Public repos",
-                  user.publicRepos.toString(),
-                ),
-              ],
-            ),
-          ],
-        ),
-        body: Placeholder(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              StatWidget(title: "Followers", value: user.followers.toString()),
+              StatWidget(title: "Followings", value: user.following.toString()),
+              StatWidget(
+                title: "Public repos",
+                value: user.publicRepos.toString(),
+              ),
+            ],
+          ),
+
+        ],
       );
     } else {
       return Center(child: Text("Error: User is null"));
@@ -103,23 +98,34 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-Widget _buildStatWidget(BuildContext context, String title, String value) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(
-        title,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+Widget _buildRepoList(BuildContext context, List<RepoMini>? repos) {
+  if (repos != null) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+            Text(
+              "Public repositories",
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8,),
+          Flexible(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: repos.length,
+              itemBuilder: (builderContext, index) {
+                return RepoCard(repo: repos[index]);
+              },
+            ),
+          ),
+        ],
       ),
-      Text(
-        value,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).hintColor),
-      ),
-    ],
-  );
+    );
+  }
+
+  return Center(child: Text("Repository list is empty."));
 }

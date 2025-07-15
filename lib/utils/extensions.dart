@@ -4,3 +4,25 @@ extension StringExtensions on String {
     return usernameRegexp.hasMatch(this);
   }
 }
+
+
+extension DateTimeExtensions on DateTime {
+  static const List<String> _months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+  String formatToMMMMDDYYYY() {
+    return "${_months[month]} $day, $year";
+  }
+}
