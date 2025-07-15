@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
 import 'package:github_profile_viewer/utils/extensions.dart';
 
@@ -14,7 +15,7 @@ class WelcomePage extends StatelessWidget {
 
   void onSubmit() {
     if (_formKey.currentState?.validate() == true) {
-      // TODO: Implement navigate to profile view page
+      Get.toNamed('/user/${_usernameTextEditingController.value.text}');
     }
   }
 

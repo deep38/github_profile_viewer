@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/route_manager.dart';
-import 'package:github_profile_viewer/presentation/controllers/welcome_page_controller.dart';
+import 'package:github_profile_viewer/data/api/github_api_service.dart';
+import 'package:github_profile_viewer/domain/service/github_data_service.dart';
+import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
+import 'package:github_profile_viewer/presentation/pages/profile_page.dart';
 import 'package:github_profile_viewer/presentation/pages/welcome_page.dart';
 
 void main() {
@@ -22,13 +24,11 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       getPages: [
-        GetPage(
-          name: '/',
-          page: () => WelcomePage(),
-          binding: BindingsBuilder(() {
-            Get.lazyPut<WelcomePageController>(() => WelcomePageController());
-          }),
-        ),
+        GetPage(name: '/', page: () => WelcomePage()),
+        GetPage(name: '/user/:username', page: () => ProfilePage(), binding: BindingsBuilder(() {
+          Get.lazyPut<GithubDataService>(() => GithubApiService());
+          Get.lazyPut(() => ProfilePageController(Get.find<GithubDataService>()));
+        })),
       ],
     );
   }
