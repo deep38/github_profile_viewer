@@ -7,7 +7,7 @@ import 'package:github_profile_viewer/presentation/components/repo_card.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
 import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
-import 'package:github_profile_viewer/presentation/model/repo.dart';
+import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 
@@ -41,14 +41,31 @@ class ProfilePage extends StatelessWidget {
               onRetry: () => _loadUserData(controller),
             ),
             success: ResponsivePage(
-              headerFlex: 1,
-              bodyFlex: 2,
-              headerBuilder:(_) => _buildUserProfileHeader(context, controller.user.value),
-              bodyBuilder:(_) => Obx(
+              headerFlex: 2,
+              bodyFlex: 3,
+              headerBuilder: (constraints) {
+                final header = _buildUserProfileHeader(
+                  context,
+                  controller.user.value,
+                  controller.openUrl,
+                );
+
+                return constraints.maxWidth > 500
+                    ? SingleChildScrollView(child: header)
+                    : header;
+              },
+              bodyBuilder: (_) => Obx(
                 () => LoadingStateWidget(
                   state: controller.reposLoadingState.value,
-                  error: ErrorIndicator(error: controller.error.value, onRetry: controller.reloadRepos,),
-                  success: _buildRepoList(context, controller.repos.value),
+                  error: ErrorIndicator(
+                    error: controller.error.value,
+                    onRetry: controller.reloadRepos,
+                  ),
+                  success: _buildRepoList(
+                    context,
+                    controller.user.value?.username,
+                    controller.repos.value,
+                  ),
                 ),
               ),
             ),
@@ -58,54 +75,75 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildUserProfileHeader(BuildContext context, User? user) {
+  Widget _buildUserProfileHeader(
+    BuildContext context,
+    User? user,
+    void Function(String) openUrl,
+  ) {
     if (user != null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            foregroundImage: NetworkImage(user.avatarUrl),
-            radius: 56,
-          ),
-
-          if (user.name != null)
-            Text(
-              user.name!,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              foregroundImage: NetworkImage(user.avatarUrl),
+              radius: 56,
             ),
 
-          Text(
-            "@${user.username}",
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
-          ),
+            if (user.name != null)
+              Text(
+                user.name!,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
 
-          if (user.bio != null)
-            Text(
-              user.bio!,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).hintColor,
+            GestureDetector(
+              onTap: () => openUrl(user.profileLink),
+              child: Text(
+                "@${user.username}",
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).hintColor,
+                ),
               ),
             ),
 
-          const SizedBox(height: 36),
+            if (user.bio != null) ...[
+              const SizedBox(height: 8),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              StatWidget(title: "Followers", value: user.followers.toString()),
-              StatWidget(title: "Followings", value: user.following.toString()),
-              StatWidget(
-                title: "Public repos",
-                value: user.publicRepos.toString(),
+              Text(
+                user.bio!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).hintColor,
+                ),
               ),
             ],
-          ),
-        ],
+
+            const SizedBox(height: 36),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                StatWidget(
+                  title: "Followers",
+                  value: user.followers.toString(),
+                ),
+                StatWidget(
+                  title: "Followings",
+                  value: user.following.toString(),
+                ),
+                StatWidget(
+                  title: "Public repos",
+                  value: user.publicRepos.toString(),
+                ),
+              ],
+            ),
+          ],
+        ),
       );
     } else {
       return Center(child: Text("Error: User is null"));
@@ -113,7 +151,11 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-Widget _buildRepoList(BuildContext context, List<RepoMini>? repos) {
+Widget _buildRepoList(
+  BuildContext context,
+  String? username,
+  List<RepoMini>? repos,
+) {
   if (repos != null) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -133,7 +175,20 @@ Widget _buildRepoList(BuildContext context, List<RepoMini>? repos) {
               padding: EdgeInsets.zero,
               itemCount: repos.length,
               itemBuilder: (builderContext, index) {
-                return RepoCard(repo: repos[index]);
+                final repo = repos[index];
+                return RepoCard(
+                  repo: repo,
+                  onClick: () {
+                    if (username == null) {
+                      Get.snackbar(
+                        "Navigating to repository",
+                        "Username not provided",
+                      );
+                      return;
+                    }
+                    Get.toNamed('/repo/$username/${repo.name}');
+                  },
+                );
               },
             ),
           ),

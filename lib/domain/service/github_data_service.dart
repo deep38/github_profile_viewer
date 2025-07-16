@@ -1,16 +1,21 @@
-import 'package:github_profile_viewer/presentation/model/repo.dart';
-import 'package:github_profile_viewer/presentation/model/user.dart';
+import 'package:get/get.dart';
 
 abstract class GithubDataService {
   /// Get github user by username
   /// 
   /// Throws [UserNotFoundException], if user is not available with prvided username.
   /// Throws [NoNetworkException], if internet connection is not available.
-  Future<User> getUser(String username);
+  Future<Response> getUser(String username);
 
-  /// Get github user by username
+  /// Get user repository list by username
   /// 
   /// Throws [NoNetworkException], if internet connection is not available.
-  Future<List<RepoMini>> getRepos(String username);
+  Future<Response> getRepos(String username);
 
+  /// Get repositry details by username and repository name.
+  /// 
+  /// Throws [NoNetworkException], if internet connection is not available.
+  Future<Response> getRepository(String username, String reponame);
+
+  
 }

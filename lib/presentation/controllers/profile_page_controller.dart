@@ -1,15 +1,16 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:github_profile_viewer/domain/service/github_data_service.dart';
-import 'package:github_profile_viewer/presentation/model/repo.dart';
+import 'package:github_profile_viewer/domain/repos/github_repository.dart';
+import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePageController extends GetxController {
-  ProfilePageController(this._githubDataService);
+  ProfilePageController(this._githubRepository);
 
-  final GithubDataService _githubDataService;
+  final GithubRepository _githubRepository;
 
   final userLoadingState = LoadingState.initial.obs;
   final reposLoadingState = LoadingState.initial.obs;
@@ -17,12 +18,12 @@ class ProfilePageController extends GetxController {
   final repos = Rx<List<RepoMini>?>(null);
   final error = Rx<Exception?>(null);
 
-  String? _currentUserName = null;
+  String? _currentUserName;
 
   void loadUserData(String username) {
     _currentUserName = username;
     userLoadingState.value = LoadingState.loading;
-    _githubDataService
+    _githubRepository
         .getUser(username)
         .then((data) {
           user.value = data;
@@ -47,9 +48,16 @@ class ProfilePageController extends GetxController {
     }
   }
 
+  void openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $uri';
+    }
+  }
+
   void _loadRepos(String username) {
     reposLoadingState.value = LoadingState.loading;
-    _githubDataService
+    _githubRepository
         .getRepos(username)
         .then((data) {
           repos.value = data;
