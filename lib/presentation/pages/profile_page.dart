@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
+import 'package:github_profile_viewer/presentation/components/error_indicator.dart';
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
 import 'package:github_profile_viewer/presentation/components/repo_card.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
@@ -13,26 +14,36 @@ import 'package:github_profile_viewer/utils/enums.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  void _loadUserData(ProfilePageController? controller) {
+    final username = Get.parameters['username'];
+    if (username != null) {
+      controller?.loadUserData(username);
+    } else {
+      controller?.error.value = Exception("Username not provided");
+      controller?.userLoadingState.value = LoadingState.error;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetX<ProfilePageController>(
         initState: (state) {
-          final username = Get.parameters['username'];
-          if (username != null) {
-            state.controller?.loadUserData(username);
-          } else {
-            state.controller?.error.value = Exception("Username not provided");
-            state.controller?.userLoadingState.value = LoadingState.error;
-          }
+          _loadUserData(state.controller);
         },
         builder: (controller) {
+          debugPrint("Error value: ${controller.error}");
           return LoadingStateWidget(
             state: controller.userLoadingState.value,
+            error: ErrorIndicator(
+              error: controller.error.value,
+              onRetry: () => _loadUserData(controller),
+            ),
             success: ResponsivePage(
               header: _buildUserProfileHeader(context, controller.user.value),
               body: LoadingStateWidget(
                 state: controller.reposLoadingState.value,
+                error: ErrorIndicator(error: controller.error.value),
                 success: _buildRepoList(context, controller.repos.value),
               ),
             ),
@@ -89,7 +100,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ],
           ),
-
         ],
       );
     } else {
@@ -106,13 +116,13 @@ Widget _buildRepoList(BuildContext context, List<RepoMini>? repos) {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            Text(
-              "Public repositories",
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8,),
+          Text(
+            "Public repositories",
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
           Flexible(
             child: ListView.builder(
               padding: EdgeInsets.zero,
