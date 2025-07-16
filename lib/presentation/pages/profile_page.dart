@@ -27,6 +27,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: GetX<ProfilePageController>(
         initState: (state) {
           _loadUserData(state.controller);
@@ -40,11 +41,15 @@ class ProfilePage extends StatelessWidget {
               onRetry: () => _loadUserData(controller),
             ),
             success: ResponsivePage(
-              header: _buildUserProfileHeader(context, controller.user.value),
-              body: LoadingStateWidget(
-                state: controller.reposLoadingState.value,
-                error: ErrorIndicator(error: controller.error.value),
-                success: _buildRepoList(context, controller.repos.value),
+              headerFlex: 1,
+              bodyFlex: 2,
+              headerBuilder:(_) => _buildUserProfileHeader(context, controller.user.value),
+              bodyBuilder:(_) => Obx(
+                () => LoadingStateWidget(
+                  state: controller.reposLoadingState.value,
+                  error: ErrorIndicator(error: controller.error.value, onRetry: controller.reloadRepos,),
+                  success: _buildRepoList(context, controller.repos.value),
+                ),
               ),
             ),
           );

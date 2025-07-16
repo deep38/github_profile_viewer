@@ -37,10 +37,10 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
+    // final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
     return Scaffold(
       body: ResponsivePage(
-        header: Center(
+        headerBuilder: (_) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -52,51 +52,64 @@ class WelcomePage extends StatelessWidget {
             ],
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: isLandscape
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.spaceBetween,
-              children: [
-                TextFormField(
-                  key: Key("usernameInputField"),
-                  controller: _usernameTextEditingController,
-                  validator: _usernameValidator,
-                  decoration: InputDecoration(
-                    labelText: "Username",
-                    hintText: "Enter username",
-                    errorMaxLines: 2,
-                    border: OutlineInputBorder(),
-                    constraints: BoxConstraints(
-                      minWidth: min(
-                        500.0,
-                        max(MediaQuery.of(context).size.width, 36.0),
+        bodyBuilder: (constraints) {
+          final isLargeWidth = constraints.maxWidth > 500;
+
+          final form = Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: isLargeWidth
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.spaceBetween,
+                children: [
+                  TextFormField(
+                    key: Key("usernameInputField"),
+                    controller: _usernameTextEditingController,
+                    validator: _usernameValidator,
+                    decoration: InputDecoration(
+                      labelText: "Username",
+                      hintText: "Enter username",
+                      errorMaxLines: 2,
+                      border: OutlineInputBorder(),
+                      constraints: BoxConstraints(
+                        minWidth: min(
+                          500.0,
+                          max(MediaQuery.of(context).size.width, 36.0),
+                        ),
+                        maxWidth: 500,
                       ),
-                      maxWidth: 500,
                     ),
                   ),
-                ),
-      
-                if (isLandscape) SizedBox(height: 16),
-      
-                ElevatedButton(
-                  key: Key("usernameSubmitButton"),
-                  onPressed: onSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    fixedSize: Size.fromWidth(MediaQuery.of(context).size.width),
-                    maximumSize: Size.fromWidth(500),
+              
+                  if (isLargeWidth) SizedBox(height: 16),
+              
+                  ElevatedButton(
+                    key: Key("usernameSubmitButton"),
+                    onPressed: onSubmit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      fixedSize: Size.fromWidth(
+                        MediaQuery.of(context).size.width,
+                      ),
+                      maximumSize: Size.fromWidth(500),
+                    ),
+                    child: const Text("View profile"),
                   ),
-                  child: const Text("View profile"),
-                ),
-              ],
-            ),
-          ),
-        ),
+                ],
+              );
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Form(
+              key: _formKey,
+              child: isLargeWidth
+              ? SingleChildScrollView(
+                child: form,
+              )
+              : form
+            )
+          );
+        },
       ),
     );
   }

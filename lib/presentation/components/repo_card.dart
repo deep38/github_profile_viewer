@@ -14,6 +14,7 @@ class RepoCard extends StatelessWidget {
       context,
     ).textTheme.bodySmall?.copyWith(color: subtitleColor);
     return Card(
+      elevation: 0.3,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
         child: Column(
