@@ -23,6 +23,6 @@ extension DateTimeExtensions on DateTime {
 ];
 
   String formatToMMMMDDYYYY() {
-    return "${_months[month]} $day, $year";
+    return "${_months[month - 1]} $day, $year";
   }
 }
