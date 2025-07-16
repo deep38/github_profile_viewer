@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:github_profile_viewer/domain/repos/github_repository.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
@@ -17,8 +18,13 @@ class ProfilePageController extends GetxController {
   final user = Rx<User?>(null);
   final repos = Rx<List<RepoMini>?>(null);
   final error = Rx<Exception?>(null);
+  final currentSortBy = SortBy.name.obs;
+  final currentSortOrder = SortOrder.asc.obs;
+
+  final TextEditingController searchTextEditingController = TextEditingController();
 
   String? _currentUserName;
+  List<RepoMini>? _repos;
 
   void loadUserData(String username) {
     _currentUserName = username;
@@ -55,12 +61,87 @@ class ProfilePageController extends GetxController {
     }
   }
 
+  void onSortOrderChange(SortOrder? sortOrder) {
+    currentSortOrder.value = sortOrder ?? SortOrder.asc;
+
+    _sortRepos();
+  }
+
+  void onSortByChange(SortBy? sortBy) {
+    currentSortBy.value = sortBy ?? SortBy.name;
+
+    _sortRepos();
+  }
+
+  void filterRepos(String query) {
+    searchTextEditingController.text = query;
+
+    repos.value = _repos?.where((repo) => repo.name.contains(query)).toList();
+  }
+
+  void onClearSearch() {
+    filterRepos("");
+  }
+
+  void _sortRepos() {
+    switch (currentSortOrder.value) {
+      case SortOrder.asc:
+        switch (currentSortBy.value) {
+          case SortBy.name:
+            _sortReposByComparator(
+              (first, second) =>
+                  first.name.toLowerCase().compareTo(second.name.toLowerCase()),
+            );
+
+          case SortBy.stars:
+            _sortReposByComparator(
+              (first, second) => first.stars.compareTo(second.stars),
+            );
+
+          case SortBy.updatedDate:
+            _sortReposByComparator(
+              (first, second) => first.updatedAt.compareTo(second.updatedAt),
+            );
+        }
+        break;
+      case SortOrder.desc:
+        switch (currentSortBy.value) {
+          case SortBy.name:
+            _sortReposByComparator(
+              (first, second) =>
+                  second.name.toLowerCase().compareTo(first.name.toLowerCase()),
+            );
+
+          case SortBy.stars:
+            _sortReposByComparator(
+              (first, second) => second.stars.compareTo(first.stars),
+            );
+
+          case SortBy.updatedDate:
+            _sortReposByComparator(
+              (first, second) => second.updatedAt.compareTo(first.updatedAt),
+            );
+        }
+        break;
+    }
+  }
+
+  void _sortReposByComparator(int Function(RepoMini, RepoMini) comparator) {
+    repos.value?.sort(comparator);
+    if (repos.value?.length == _repos?.length) {
+      _repos = repos.value;
+    } else {
+      _repos?.sort(comparator);
+    }
+  }
+
   void _loadRepos(String username) {
     reposLoadingState.value = LoadingState.loading;
     _githubRepository
         .getRepos(username)
         .then((data) {
-          repos.value = data;
+          _repos = data;
+          repos.value = _repos;
           reposLoadingState.value = LoadingState.success;
         })
         .catchError((e) {

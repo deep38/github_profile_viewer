@@ -4,6 +4,7 @@ import 'package:get/route_manager.dart';
 import 'package:github_profile_viewer/presentation/components/error_indicator.dart';
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
 import 'package:github_profile_viewer/presentation/components/repo_card.dart';
+import 'package:github_profile_viewer/presentation/components/repository_list_header.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
 import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
@@ -27,13 +28,13 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(),
       body: GetX<ProfilePageController>(
         initState: (state) {
           _loadUserData(state.controller);
         },
         builder: (controller) {
-          debugPrint("Error value: ${controller.error}");
           return LoadingStateWidget(
             state: controller.userLoadingState.value,
             error: ErrorIndicator(
@@ -65,6 +66,13 @@ class ProfilePage extends StatelessWidget {
                     context,
                     controller.user.value?.username,
                     controller.repos.value,
+                    controller.currentSortBy.value,
+                    controller.currentSortOrder.value,
+                    controller.searchTextEditingController,
+                    controller.filterRepos,
+                    controller.onSortByChange,
+                    controller.onSortOrderChange,
+                    controller.onClearSearch,
                   ),
                 ),
               ),
@@ -155,6 +163,13 @@ Widget _buildRepoList(
   BuildContext context,
   String? username,
   List<RepoMini>? repos,
+  SortBy sortBy,
+  SortOrder sortOrder,
+  TextEditingController searchTextEditingController,
+  void Function(String) onSearchQueryChange,
+  void Function(SortBy?) onSortByChange,
+  void Function(SortOrder?) onSortOrderChange,
+  VoidCallback onClearSearch,
 ) {
   if (repos != null) {
     return Padding(
@@ -163,34 +178,41 @@ Widget _buildRepoList(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Public repositories",
-            style: Theme.of(
-              context,
-            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+          RepositoryListHeader(
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            onSearchQueryChange: onSearchQueryChange,
+            onSortByChange: onSortByChange,
+            onSortOrderChange: onSortOrderChange,
+            searchTextEditingController: searchTextEditingController,
+            onClearSearch: onClearSearch,
           ),
           SizedBox(height: 8),
           Flexible(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: repos.length,
-              itemBuilder: (builderContext, index) {
-                final repo = repos[index];
-                return RepoCard(
-                  repo: repo,
-                  onClick: () {
-                    if (username == null) {
-                      Get.snackbar(
-                        "Navigating to repository",
-                        "Username not provided",
+            child: repos.isNotEmpty
+                ? ListView.builder(
+                    padding: EdgeInsets.zero,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    itemCount: repos.length,
+                    itemBuilder: (builderContext, index) {
+                      final repo = repos[index];
+                      return RepoCard(
+                        repo: repo,
+                        onClick: () {
+                          if (username == null) {
+                            Get.snackbar(
+                              "Navigating to repository",
+                              "Username not provided",
+                            );
+                            return;
+                          }
+                          Get.toNamed('/repo/$username/${repo.name}');
+                        },
                       );
-                      return;
-                    }
-                    Get.toNamed('/repo/$username/${repo.name}');
-                  },
-                );
-              },
-            ),
+                    },
+                  )
+                : Center(child: Text("Nothing to show here.")),
           ),
         ],
       ),

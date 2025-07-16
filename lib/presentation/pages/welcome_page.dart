@@ -15,20 +15,20 @@ class WelcomePage extends StatelessWidget {
 
   void onSubmit() {
     if (_formKey.currentState?.validate() == true) {
-      Get.toNamed('/user/${_usernameTextEditingController.value.text}');
+      Get.toNamed('/user/${_usernameTextEditingController.value.text.trim()}');
     }
   }
 
   String? _usernameValidator(String? username) {
-    if (username == null || username.isEmpty) {
+    if (username == null || username.trim().isEmpty) {
       return "Please enter username";
     }
 
-    if (username.length > 39) {
+    if (username.trim().length > 39) {
       return "Username is too long. it must be less than 40 characters.";
     }
 
-    if (!username.isValidUsername()) {
+    if (!username.trim().isValidUsername()) {
       return "Invalide username. Username can only contain alphabets, numbers and single -(hyphen) inbetween.";
     }
 
