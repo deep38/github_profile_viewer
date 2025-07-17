@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/extensions.dart';
 
 class WelcomePage extends StatelessWidget {
@@ -21,15 +22,15 @@ class WelcomePage extends StatelessWidget {
 
   String? _usernameValidator(String? username) {
     if (username == null || username.trim().isEmpty) {
-      return "Please enter username";
+      return Strings.emptyUserNameErrorMessage;
     }
 
     if (username.trim().length > 39) {
-      return "Username is too long. it must be less than 40 characters.";
+      return Strings.tooLongUserNameErrorMessage;
     }
 
     if (!username.trim().isValidUsername()) {
-      return "Invalide username. Username can only contain alphabets, numbers and single -(hyphen) inbetween.";
+      return Strings.invalidUserNameErrorMessage;
     }
 
     return null;
@@ -53,7 +54,7 @@ class WelcomePage extends StatelessWidget {
           ),
         ),
         bodyBuilder: (constraints) {
-          final isLargeWidth = constraints.maxWidth > 500;
+          final isLargeWidth = constraints.maxWidth > Dimens.mediumWidth;
 
           final form = Column(
                 mainAxisSize: MainAxisSize.max,
@@ -62,7 +63,7 @@ class WelcomePage extends StatelessWidget {
                     : MainAxisAlignment.spaceBetween,
                 children: [
                   TextFormField(
-                    key: Key("usernameInputField"),
+                    key: Key(Strings.welcomePageUserNameFieldKey),
                     controller: _usernameTextEditingController,
                     validator: _usernameValidator,
                     decoration: InputDecoration(
@@ -72,18 +73,18 @@ class WelcomePage extends StatelessWidget {
                       border: OutlineInputBorder(),
                       constraints: BoxConstraints(
                         minWidth: min(
-                          500.0,
+                          Dimens.mediumWidth,
                           max(MediaQuery.of(context).size.width, 36.0),
                         ),
-                        maxWidth: 500,
+                        maxWidth: Dimens.mediumWidth,
                       ),
                     ),
                   ),
               
-                  if (isLargeWidth) SizedBox(height: 16),
+                  if (isLargeWidth) SizedBox(height: Dimens.paddingMedium),
               
                   ElevatedButton(
-                    key: Key("usernameSubmitButton"),
+                    key: Key(Strings.welcomePageUsernameSubmitButtonKey),
                     onPressed: onSubmit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -91,15 +92,15 @@ class WelcomePage extends StatelessWidget {
                       fixedSize: Size.fromWidth(
                         MediaQuery.of(context).size.width,
                       ),
-                      maximumSize: Size.fromWidth(500),
+                      maximumSize: Size.fromWidth(Dimens.mediumWidth),
                     ),
-                    child: const Text("View profile"),
+                    child: const Text(Strings.viewProfileButtonText),
                   ),
                 ],
               );
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
             child: Form(
               key: _formKey,
               child: isLargeWidth

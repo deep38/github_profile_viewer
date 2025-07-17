@@ -6,9 +6,9 @@ import 'package:github_profile_viewer/presentation/model/repository.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
 import 'package:github_profile_viewer/utils/exceptions.dart';
 
-class GithubRepository {
+class GithubDataRepository {
 
-  GithubRepository(this.service);
+  GithubDataRepository(this.service);
 
   final GithubDataService service;
 

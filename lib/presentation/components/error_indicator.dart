@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/exceptions.dart';
 
 class ErrorIndicator extends StatelessWidget {
@@ -15,17 +16,17 @@ class ErrorIndicator extends StatelessWidget {
       child: switch (error) {
         NoNetworkException _ => _buildErrorWidget(
           AssetImage('images/error/no_internet_connection.png'),
-          "No internet connection. Check your connectivity then refresh.",
+          Strings.noInternetConnectionErrorMessage,
           true,
           onRetry,
         ),
         UserNotFoundException _ => _buildErrorWidget(
           AssetImage('images/error/not_found.png'),
-          "User not found.",
+          Strings.userNotFoundErrorMessage,
         ),
         _ => _buildErrorWidget(
           AssetImage('images/error/unexpected_error.png'),
-          "Something went wrong. Please try again.",
+          Strings.unexpectedErrorMessage,
           true,
           onRetry,
         ),

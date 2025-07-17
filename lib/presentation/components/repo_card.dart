@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/extensions.dart';
 
 class RepoCard extends StatelessWidget {
@@ -14,12 +15,13 @@ class RepoCard extends StatelessWidget {
     final subtitleTextStyle = Theme.of(
       context,
     ).textTheme.bodySmall?.copyWith(color: subtitleColor);
-    return InkWell(
-      onTap: onClick,
-      child: Card(
-        elevation: 0.3,
+    return Card(
+      elevation: 0.3,
+      clipBehavior: Clip.hardEdge,
+      child: InkWell(
+        onTap: onClick,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium, vertical: Dimens.paddingSmall),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +36,7 @@ class RepoCard extends StatelessWidget {
               if (repo.description != null)
                 Text(repo.description!, style: subtitleTextStyle, maxLines: 2),
       
-              SizedBox(height: 18),
+              SizedBox(height: Dimens.paddingMedium),
       
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

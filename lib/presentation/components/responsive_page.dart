@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 
 class ResponsivePage extends StatelessWidget {
   const ResponsivePage({
@@ -29,7 +30,7 @@ class ResponsivePage extends StatelessWidget {
         );
         return Padding(
           padding: MediaQuery.of(context).padding,
-          child: constraints.maxWidth > 500
+          child: constraints.maxWidth > Dimens.mediumWidth
               ? Row(children: [finalHeader, finalBody])
               : Column(children: [finalHeader, finalBody]),
         );

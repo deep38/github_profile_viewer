@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:github_profile_viewer/domain/repos/github_repository.dart';
+import 'package:github_profile_viewer/domain/repos/github_data_repository.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
@@ -11,7 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ProfilePageController extends GetxController {
   ProfilePageController(this._githubRepository);
 
-  final GithubRepository _githubRepository;
+  final GithubDataRepository _githubRepository;
 
   final userLoadingState = LoadingState.initial.obs;
   final reposLoadingState = LoadingState.initial.obs;

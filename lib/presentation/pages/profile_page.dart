@@ -10,6 +10,7 @@ import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -51,7 +52,7 @@ class ProfilePage extends StatelessWidget {
                   controller.openUrl,
                 );
 
-                return constraints.maxWidth > 500
+                return constraints.maxWidth > Dimens.mediumWidth
                     ? SingleChildScrollView(child: header)
                     : header;
               },
@@ -90,7 +91,7 @@ class ProfilePage extends StatelessWidget {
   ) {
     if (user != null) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,7 +120,7 @@ class ProfilePage extends StatelessWidget {
             ),
 
             if (user.bio != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: Dimens.paddingSmall),
 
               Text(
                 user.bio!,
@@ -131,7 +132,7 @@ class ProfilePage extends StatelessWidget {
               ),
             ],
 
-            const SizedBox(height: 36),
+            const SizedBox(height: Dimens.paddingLarge),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -173,7 +174,7 @@ Widget _buildRepoList(
 ) {
   if (repos != null) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +188,7 @@ Widget _buildRepoList(
             searchTextEditingController: searchTextEditingController,
             onClearSearch: onClearSearch,
           ),
-          SizedBox(height: 8),
+          SizedBox(height: Dimens.paddingSmall),
           Flexible(
             child: repos.isNotEmpty
                 ? ListView.builder(
@@ -212,7 +213,7 @@ Widget _buildRepoList(
                       );
                     },
                   )
-                : Center(child: Text("Nothing to show here.")),
+                : Center(child: Text(Strings.emptyListMessage)),
           ),
         ],
       ),

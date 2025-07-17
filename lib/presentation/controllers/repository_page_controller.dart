@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:github_profile_viewer/domain/repos/github_repository.dart';
+import 'package:github_profile_viewer/domain/repos/github_data_repository.dart';
 import 'package:github_profile_viewer/presentation/model/repository.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,7 +10,7 @@ class RepositoryPageController extends GetxController {
 
   RepositoryPageController(this._githubRepository);
   
-  final GithubRepository _githubRepository;
+  final GithubDataRepository _githubRepository;
   final loadingState = LoadingState.success.obs;
   final repo = Rx<Repository?>(null);
   final error = Rx<Exception?>(null);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 
 class RepositoryListHeader extends StatelessWidget {
@@ -49,7 +50,7 @@ class RepositoryListHeader extends StatelessWidget {
               value: sortBy,
               onChanged: onSortByChange,
             ),
-            SizedBox(width: 8),
+            SizedBox(width: Dimens.paddingSmall),
             DropdownButton<SortOrder>(
               icon: Icon(Icons.swap_vert),
               underline: SizedBox(),
@@ -67,7 +68,7 @@ class RepositoryListHeader extends StatelessWidget {
         SizedBox(height: 4),
         SearchBar(
           padding: WidgetStatePropertyAll(
-            EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            EdgeInsets.symmetric(vertical: 4, horizontal: Dimens.paddingSmall),
           ),
           onChanged: (v) {
             onSearchQueryChange(v);},

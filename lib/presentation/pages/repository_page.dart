@@ -4,6 +4,7 @@ import 'package:github_profile_viewer/presentation/components/info_chip.dart';
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/repository_page_controller.dart';
 import 'package:github_profile_viewer/presentation/model/repository.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 import 'package:github_profile_viewer/utils/extensions.dart';
 
@@ -31,7 +32,7 @@ class RepositoryPage extends StatelessWidget {
         initState: (state) => _loadUserData(state.controller),
         builder: (controller) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
             child: LoadingStateWidget(
               state: controller.loadingState.value,
               success: _buildSuccess(
@@ -75,7 +76,7 @@ class RepositoryPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 8),
+                    SizedBox(height: Dimens.paddingSmall),
                 
                     Wrap(
                       children: [
@@ -111,7 +112,7 @@ class RepositoryPage extends StatelessWidget {
                       style: subtitleTextStyle,
                     ),
 
-                    SizedBox(height: 8),
+                    SizedBox(height: Dimens.paddingSmall),
                     if (repo.description != null)
                       Text(repo.description!, style: subtitleTextStyle, maxLines: 2, overflow: TextOverflow.ellipsis,),
                   ],
@@ -120,11 +121,11 @@ class RepositoryPage extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 16),
+          SizedBox(height: Dimens.paddingMedium),
 
           Wrap(
-            spacing: 16,
-            runSpacing: 8,
+            spacing: Dimens.paddingMedium,
+            runSpacing: Dimens.paddingSmall,
             alignment: WrapAlignment.spaceBetween,
             children: [
               if (repo.language != null)
