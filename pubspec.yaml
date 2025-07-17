@@ -37,6 +37,8 @@ dependencies:
   get: ^4.7.2
   url_launcher: ^6.3.2
   flutter_sticky_header: ^0.8.0
+  readmore: ^3.0.0
+  animated_text_kit: ^4.2.3
 
 dev_dependencies:
   flutter_test:

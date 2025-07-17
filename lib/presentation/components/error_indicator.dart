@@ -20,9 +20,9 @@ class ErrorIndicator extends StatelessWidget {
           true,
           onRetry,
         ),
-        UserNotFoundException _ => _buildErrorWidget(
+        NotFoundException e => _buildErrorWidget(
           AssetImage('assets/images/error/not_found.png'),
-          Strings.userNotFoundErrorMessage,
+          e.message,
         ),
         _ => _buildErrorWidget(
           AssetImage('assets/images/error/unexpected_error.png'),
