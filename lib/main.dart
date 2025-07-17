@@ -49,8 +49,8 @@ class MyApp extends StatelessWidget {
           name: '/repo/:username/:reponame',
           page: () => RepositoryPage(),
           binding: BindingsBuilder(() {
-            // Get.lazyPut<GithubDataService>(() => GithubApiService());
-            // Get.lazyPut<GithubDataRepository>(() => GithubDataRepository(Get.find<GithubDataService>()));
+            Get.lazyPut<GithubDataService>(() => GithubApiService());
+            Get.lazyPut<GithubDataRepository>(() => GithubDataRepository(Get.find<GithubDataService>()));
             Get.lazyPut<RepositoryPageController>(
               () => RepositoryPageController(Get.find<GithubDataRepository>()),
             );

@@ -55,6 +55,7 @@ class ErrorIndicator extends StatelessWidget {
               ),
               Text(
                 message,
+                textAlign: TextAlign.center,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
