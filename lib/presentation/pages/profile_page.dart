@@ -134,22 +134,25 @@ class ProfilePage extends StatelessWidget {
 
             const SizedBox(height: Dimens.paddingLarge),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                StatWidget(
-                  title: "Followers",
-                  value: user.followers.toString(),
-                ),
-                StatWidget(
-                  title: "Followings",
-                  value: user.following.toString(),
-                ),
-                StatWidget(
-                  title: "Public repos",
-                  value: user.publicRepos.toString(),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  StatWidget(
+                    title: "Followers",
+                    value: user.followers.toString(),
+                  ),
+                  StatWidget(
+                    title: "Followings",
+                    value: user.following.toString(),
+                  ),
+                  StatWidget(
+                    title: "Public repos",
+                    value: user.publicRepos.toString(),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -188,6 +191,7 @@ Widget _buildRepoList(
             searchTextEditingController: searchTextEditingController,
             onClearSearch: onClearSearch,
           ),
+          Divider(),
           SizedBox(height: Dimens.paddingSmall),
           Flexible(
             child: repos.isNotEmpty

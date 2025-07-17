@@ -41,26 +41,38 @@ class WelcomePage extends StatelessWidget {
     // final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
     return Scaffold(
       body: ResponsiveLayout(
-        headerBuilder: (_) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("GitHub", style: Theme.of(context).textTheme.displayLarge),
-              Text(
-                "PROFILE VIEWER",
-                style: Theme.of(context).textTheme.labelMedium,
+        headerBuilder: (_) => Stack(
+          children: [
+            ClipPath(
+              clipper: _WaveClipper(),
+              child: Container(
+                // transform: Mat,
+                color: Theme.of(context).colorScheme.primaryContainer,
+                
               ),
-            ],
-          ),
+            ),
+
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("GitHub", style: Theme.of(context).textTheme.displayLarge),
+                  Text(
+                    "PROFILE VIEWER",
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         bodyBuilder: (constraints) {
           final isLargeWidth = constraints.maxWidth > Dimens.mediumWidth;
 
           final form = Column(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: isLargeWidth
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
+                    // : MainAxisAlignment.spaceBetween,
                 children: [
                   TextFormField(
                     key: Key(Strings.welcomePageUserNameFieldKey),
@@ -84,7 +96,7 @@ class WelcomePage extends StatelessWidget {
                     onFieldSubmitted: (_) => onSubmit(),
                   ),
               
-                  if (isLargeWidth) SizedBox(height: Dimens.paddingMedium),
+                  SizedBox(height: Dimens.paddingMedium),
               
                   ElevatedButton(
                     key: Key(Strings.welcomePageUsernameSubmitButtonKey),
@@ -117,4 +129,29 @@ class WelcomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class _WaveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    debugPrint('Width: ${size.width}');
+    final path = Path();
+
+    path.lineTo(0, size.height - (size.height / 6));
+
+    final firstPoint = Point<double>(0, size.height - (size.height / 6));
+    final secondPoint = Point<double>(size.width / 2, size.height);
+    final thirdPoint = Point<double>(size.width, size.height - (size.height / 6));
+    path.cubicTo(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y, thirdPoint.x, thirdPoint.y);
+    
+    path.lineTo(size.width, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
+  }
+  
 }

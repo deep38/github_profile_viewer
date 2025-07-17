@@ -127,6 +127,8 @@ class RepositoryPage extends StatelessWidget {
               ),
           
               SizedBox(height: Dimens.paddingMedium),
+
+              Divider(),
           
               if (repo.description != null) ...[
                 _Section(title: 'Description', child: Text(repo.description!)),
@@ -196,20 +198,26 @@ class _Section extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+    return Card(
+      
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall, horizontal: Dimens.paddingMedium),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Padding(padding: const EdgeInsets.all(8.0), child: child),
+            ],
           ),
-          Padding(padding: const EdgeInsets.all(8.0), child: child),
-        ],
+        ),
       ),
     );
   }
