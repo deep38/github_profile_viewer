@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:github_profile_viewer/presentation/components/error_indicator.dart';
@@ -29,7 +30,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(),
       body: GetX<ProfilePageController>(
         initState: (state) {
@@ -42,26 +43,29 @@ class ProfilePage extends StatelessWidget {
               error: controller.error.value,
               onRetry: () => _loadUserData(controller),
             ),
-            success: ResponsiveLayout(
-              headerFlex: 2,
-              bodyFlex: 3,
-              headerBuilder: (constraints) {
-                final header = _buildUserProfileHeader(
-                  context,
-                  controller.user.value,
-                  controller.openUrl,
-                );
+            // initial: SliverToBoxAdapter(),
+            // loading: SliverToBoxAdapter(child: Center(child: CircularProgressIndicator.adaptive()),),
+            success: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _buildUserProfileHeader(
+                    context,
+                    controller.user.value,
+                    controller.openUrl,
+                  ),
+                ),
 
-                return constraints.maxWidth > Dimens.mediumWidth
-                    ? SingleChildScrollView(child: header)
-                    : header;
-              },
-              bodyBuilder: (_) => Obx(
-                () => LoadingStateWidget(
+                LoadingStateWidget(
                   state: controller.reposLoadingState.value,
-                  error: ErrorIndicator(
-                    error: controller.error.value,
-                    onRetry: controller.reloadRepos,
+                  error: SliverToBoxAdapter(
+                    child: ErrorIndicator(
+                      error: controller.error.value,
+                      onRetry: controller.reloadRepos,
+                    ),
+                  ),
+                  initial: SliverToBoxAdapter(),
+                  loading: SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator.adaptive()),
                   ),
                   success: _buildRepoList(
                     context,
@@ -76,8 +80,50 @@ class ProfilePage extends StatelessWidget {
                     controller.onClearSearch,
                   ),
                 ),
-              ),
+              ],
             ),
+            // ResponsiveLayout(
+            //   headerFlex: 2,
+            //   bodyFlex: 3,
+            //   headerBuilder: (constraints) {
+            //     final header = SliverToBoxAdapter(
+            //       child: _buildUserProfileHeader(
+            //         context,
+            //         controller.user.value,
+            //         controller.openUrl,
+            //       ),
+            //     );
+
+            //     return constraints.maxWidth > Dimens.mediumWidth
+            //         ? SingleChildScrollView(child: header)
+            //         : header;
+            //   },
+            //   bodyBuilder: (_) => Obx(
+            //     () => LoadingStateWidget(
+            //       state: controller.reposLoadingState.value,
+            //       error: SliverToBoxAdapter(
+            //         child: ErrorIndicator(
+            //           error: controller.error.value,
+            //           onRetry: controller.reloadRepos,
+            //         ),
+            //       ),
+            //       initial: SliverToBoxAdapter(),
+            //       loading: SliverToBoxAdapter(child: CircularProgressIndicator.adaptive(),),
+            //       success: _buildRepoList(
+            //         context,
+            //         controller.user.value?.username,
+            //         controller.repos.value,
+            //         controller.currentSortBy.value,
+            //         controller.currentSortOrder.value,
+            //         controller.searchTextEditingController,
+            //         controller.filterRepos,
+            //         controller.onSortByChange,
+            //         controller.onSortOrderChange,
+            //         controller.onClearSearch,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           );
         },
       ),
@@ -173,49 +219,42 @@ Widget _buildRepoList(
   VoidCallback onClearSearch,
 ) {
   if (repos != null) {
-    return Padding(
+    return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RepositoryListHeader(
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            onSearchQueryChange: onSearchQueryChange,
-            onSortByChange: onSortByChange,
-            onSortOrderChange: onSortOrderChange,
-            searchTextEditingController: searchTextEditingController,
-            onClearSearch: onClearSearch,
-          ),
-          SizedBox(height: Dimens.paddingSmall),
-          Flexible(
-            child: repos.isNotEmpty
-                ? ListView.builder(
-                    padding: EdgeInsets.zero,
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    itemCount: repos.length,
-                    itemBuilder: (builderContext, index) {
-                      final repo = repos[index];
-                      return RepoCard(
-                        repo: repo,
-                        onClick: () {
-                          if (username == null) {
-                            Get.snackbar(
-                              "Navigating to repository",
-                              "Username not provided",
-                            );
-                            return;
-                          }
-                          Get.toNamed('/repo/$username/${repo.name}');
-                        },
-                      );
+      sliver: SliverStickyHeader(
+        header: RepositoryListHeader(
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+          onSearchQueryChange: onSearchQueryChange,
+          onSortByChange: onSortByChange,
+          onSortOrderChange: onSortOrderChange,
+          searchTextEditingController: searchTextEditingController,
+          onClearSearch: onClearSearch,
+        ),
+        sliver: repos.isNotEmpty
+            ? SliverList.builder(
+                // padding: EdgeInsets.zero,
+                // keyboardDismissBehavior:
+                //     ScrollViewKeyboardDismissBehavior.onDrag,
+                itemCount: repos.length,
+                itemBuilder: (builderContext, index) {
+                  final repo = repos[index];
+                  return RepoCard(
+                    repo: repo,
+                    onClick: () {
+                      if (username == null) {
+                        Get.snackbar(
+                          "Navigating to repository",
+                          "Username not provided",
+                        );
+                        return;
+                      }
+                      Get.toNamed('/repo/$username/${repo.name}');
                     },
-                  )
-                : Center(child: Text(Strings.emptyListMessage)),
-          ),
-        ],
+                  );
+                },
+              )
+            : SliverFillRemaining(child: Center(child: Text(Strings.emptyListMessage))),
       ),
     );
   }

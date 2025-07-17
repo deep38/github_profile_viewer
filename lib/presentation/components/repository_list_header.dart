@@ -24,65 +24,68 @@ class RepositoryListHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                "Public repositories",
-                style: Theme.of(
-                  context,
-                ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+    return ColoredBox(
+      color: Theme.of(context).canvasColor,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Public repositories",
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            DropdownButton<SortBy>(
-              icon: Icon(Icons.sort),
-              underline: SizedBox(),
-              items: SortBy.values.map((sortOrder) {
-                return DropdownMenuItem<SortBy>(
-                  value: sortOrder,
-                  child: Text(sortOrder.title, style: Theme.of(context).textTheme.bodyMedium,),
-                );
-              }).toList(),
-              value: sortBy,
-              onChanged: onSortByChange,
-            ),
-            SizedBox(width: Dimens.paddingSmall),
-            DropdownButton<SortOrder>(
-              icon: Icon(Icons.swap_vert),
-              underline: SizedBox(),
-              items: SortOrder.values.map((sortOrder) {
-                return DropdownMenuItem<SortOrder>(
-                  value: sortOrder,
-                  child: Text(sortOrder.name, style: Theme.of(context).textTheme.bodyMedium),
-                );
-              }).toList(),
-              value: sortOrder,
-              onChanged: onSortOrderChange,
-            ),
-          ],
-        ),
-        SizedBox(height: 4),
-        SearchBar(
-          padding: WidgetStatePropertyAll(
-            EdgeInsets.symmetric(vertical: 4, horizontal: Dimens.paddingSmall),
+              DropdownButton<SortBy>(
+                icon: Icon(Icons.sort),
+                underline: SizedBox(),
+                items: SortBy.values.map((sortOrder) {
+                  return DropdownMenuItem<SortBy>(
+                    value: sortOrder,
+                    child: Text(sortOrder.title, style: Theme.of(context).textTheme.bodyMedium,),
+                  );
+                }).toList(),
+                value: sortBy,
+                onChanged: onSortByChange,
+              ),
+              SizedBox(width: Dimens.paddingSmall),
+              DropdownButton<SortOrder>(
+                icon: Icon(Icons.swap_vert),
+                underline: SizedBox(),
+                items: SortOrder.values.map((sortOrder) {
+                  return DropdownMenuItem<SortOrder>(
+                    value: sortOrder,
+                    child: Text(sortOrder.name, style: Theme.of(context).textTheme.bodyMedium),
+                  );
+                }).toList(),
+                value: sortOrder,
+                onChanged: onSortOrderChange,
+              ),
+            ],
           ),
-          elevation: WidgetStatePropertyAll(0),
-          onChanged: (v) {
-            onSearchQueryChange(v);},
-          leading: Icon(Icons.search_rounded),
-          trailing: [
-            if(searchTextEditingController.text.isNotEmpty)
-            IconButton(onPressed: onClearSearch, icon: Icon(Icons.close_rounded))
-          ],
-          controller: searchTextEditingController,
-          hintText: "Search",
-          textInputAction: TextInputAction.search,
-        ),
-      ],
+          SizedBox(height: 4),
+          SearchBar(
+            padding: WidgetStatePropertyAll(
+              EdgeInsets.symmetric(vertical: 4, horizontal: Dimens.paddingSmall),
+            ),
+            elevation: WidgetStatePropertyAll(0),
+            onChanged: (v) {
+              onSearchQueryChange(v);},
+            leading: Icon(Icons.search_rounded),
+            trailing: [
+              if(searchTextEditingController.text.isNotEmpty)
+              IconButton(onPressed: onClearSearch, icon: Icon(Icons.close_rounded))
+            ],
+            controller: searchTextEditingController,
+            hintText: "Search",
+            textInputAction: TextInputAction.search,
+          ),
+        ],
+      ),
     );
   }
 }
