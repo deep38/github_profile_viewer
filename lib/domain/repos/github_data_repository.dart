@@ -4,6 +4,7 @@ import 'package:github_profile_viewer/domain/service/github_data_service.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
 import 'package:github_profile_viewer/presentation/model/repository.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/exceptions.dart';
 
 class GithubDataRepository {
@@ -17,7 +18,7 @@ class GithubDataRepository {
     if (response.status.connectionError) {
       throw NoNetworkException();
     } else if (response.status.isNotFound) {
-      throw UserNotFoundException();
+      throw NotFoundException(message: Strings.userNotFoundErrorMessage);
     } else if (response.bodyString == null) {
       throw Exception("Response is empty");
     }
@@ -33,7 +34,7 @@ class GithubDataRepository {
     if (response.status.connectionError) {
       throw NoNetworkException();
     } else if (response.status.isNotFound) {
-      throw UserNotFoundException();
+      throw NotFoundException(message: Strings.repositoryListNotFoundErrorMessage);
     } else if (response.bodyString == null) {
       throw Exception("Response is empty");
     }
@@ -56,7 +57,7 @@ class GithubDataRepository {
     if (response.status.connectionError) {
       throw NoNetworkException();
     } else if (response.status.isNotFound) {
-      throw UserNotFoundException();
+      throw NotFoundException(message: Strings.repositoryNotFoundErrorMessage);
     } else if (response.bodyString == null) {
       throw Exception("Response is empty");
     }

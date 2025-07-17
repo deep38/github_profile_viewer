@@ -64,7 +64,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   initial: SliverToBoxAdapter(),
-                  loading: SliverToBoxAdapter(
+                  loading: SliverFillRemaining(
                     child: Center(child: CircularProgressIndicator.adaptive()),
                   ),
                   success: _buildRepoList(
@@ -165,30 +165,10 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
 
-            if (user.bio != null) ...[
-              const SizedBox(height: Dimens.paddingSmall),
-
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SectionWidget(
-                    title: 'About',
-                    child: Text(
-                      user.bio!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).hintColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-
             const SizedBox(height: Dimens.paddingSmall),
 
             Card(
+              elevation: 0,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -211,7 +191,28 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
 
-            Divider()
+            if (user.bio != null) ...[
+              const SizedBox(height: Dimens.paddingSmall),
+
+              Card(
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SectionWidget(
+                    title: 'About',
+                    child: Text(
+                      user.bio!,
+                      maxLines: 5,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+
+            Divider(),
           ],
         ),
       );
@@ -250,7 +251,7 @@ Widget _buildRepoList(
                 searchTextEditingController: searchTextEditingController,
                 onClearSearch: onClearSearch,
               ),
-              Divider()
+              Divider(),
             ],
           ),
         ),
@@ -277,7 +278,15 @@ Widget _buildRepoList(
                   );
                 },
               )
-            : SliverFillRemaining(child: Center(child: Text(Strings.emptyListMessage))),
+            : SliverFillRemaining(
+                child: Center(child: Text(
+                  searchTextEditingController.text.isEmpty
+                  ? Strings.repositoryListEmptyMessage
+                  : Strings.noItemsMatchYourSearch,
+                  textAlign: TextAlign.center,
+                  )
+                  ),
+              ),
       ),
     );
   }

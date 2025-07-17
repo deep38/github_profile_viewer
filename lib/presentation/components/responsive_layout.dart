@@ -28,12 +28,9 @@ class ResponsiveLayout extends StatelessWidget {
           flex: bodyFlex,
           child: bodyBuilder(constraints),
         );
-        return Padding(
-          padding: MediaQuery.of(context).padding,
-          child: constraints.maxWidth > Dimens.mediumWidth
-              ? Row(children: [finalHeader, finalBody])
-              : Column(children: [finalHeader, finalBody]),
-        );
+        return constraints.maxWidth > Dimens.mediumWidth
+            ? Row(children: [finalHeader, finalBody])
+            : Column(children: [finalHeader, finalBody]);
       },
     );
   }
