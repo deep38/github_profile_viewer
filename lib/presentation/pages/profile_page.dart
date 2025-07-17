@@ -6,7 +6,7 @@ import 'package:github_profile_viewer/presentation/components/error_indicator.da
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
 import 'package:github_profile_viewer/presentation/components/repo_card.dart';
 import 'package:github_profile_viewer/presentation/components/repository_list_header.dart';
-import 'package:github_profile_viewer/presentation/components/responsive_layout.dart';
+import 'package:github_profile_viewer/presentation/components/section_widget.dart';
 import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
@@ -168,35 +168,50 @@ class ProfilePage extends StatelessWidget {
             if (user.bio != null) ...[
               const SizedBox(height: Dimens.paddingSmall),
 
-              Text(
-                user.bio!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).hintColor,
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SectionWidget(
+                    title: 'About',
+                    child: Text(
+                      user.bio!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
 
-            const SizedBox(height: Dimens.paddingLarge),
+            const SizedBox(height: Dimens.paddingSmall),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                StatWidget(
-                  title: "Followers",
-                  value: user.followers.toString(),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    StatWidget(
+                      title: "Followers",
+                      value: user.followers.toString(),
+                    ),
+                    StatWidget(
+                      title: "Followings",
+                      value: user.following.toString(),
+                    ),
+                    StatWidget(
+                      title: "Public repos",
+                      value: user.publicRepos.toString(),
+                    ),
+                  ],
                 ),
-                StatWidget(
-                  title: "Followings",
-                  value: user.following.toString(),
-                ),
-                StatWidget(
-                  title: "Public repos",
-                  value: user.publicRepos.toString(),
-                ),
-              ],
+              ),
             ),
+
+            Divider()
           ],
         ),
       );
@@ -222,14 +237,22 @@ Widget _buildRepoList(
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
       sliver: SliverStickyHeader(
-        header: RepositoryListHeader(
-          sortBy: sortBy,
-          sortOrder: sortOrder,
-          onSearchQueryChange: onSearchQueryChange,
-          onSortByChange: onSortByChange,
-          onSortOrderChange: onSortOrderChange,
-          searchTextEditingController: searchTextEditingController,
-          onClearSearch: onClearSearch,
+        header: ColoredBox(
+          color: Theme.of(context).canvasColor,
+          child: Column(
+            children: [
+              RepositoryListHeader(
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+                onSearchQueryChange: onSearchQueryChange,
+                onSortByChange: onSortByChange,
+                onSortOrderChange: onSortOrderChange,
+                searchTextEditingController: searchTextEditingController,
+                onClearSearch: onClearSearch,
+              ),
+              Divider()
+            ],
+          ),
         ),
         sliver: repos.isNotEmpty
             ? SliverList.builder(

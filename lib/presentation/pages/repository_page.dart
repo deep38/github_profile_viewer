@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:github_profile_viewer/presentation/components/info_chip.dart';
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
+import 'package:github_profile_viewer/presentation/components/section_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/repository_page_controller.dart';
 import 'package:github_profile_viewer/presentation/model/repository.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
@@ -83,7 +84,7 @@ class RepositoryPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: Dimens.paddingSmall),
-          
+
                         Wrap(
                           children: [
                             GestureDetector(
@@ -114,7 +115,7 @@ class RepositoryPage extends StatelessWidget {
                             ),
                           ],
                         ),
-          
+
                         SizedBox(height: 2),
                         Text(
                           "Updated on ${repo.updatedAt.formatToMMMMDDYYYY()}",
@@ -125,58 +126,78 @@ class RepositoryPage extends StatelessWidget {
                   ),
                 ],
               ),
-          
+
               SizedBox(height: Dimens.paddingMedium),
-          
+
               if (repo.description != null) ...[
-                _Section(title: 'Description', child: Text(repo.description!)),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: Dimens.paddingSmall,
+                      horizontal: Dimens.paddingMedium,
+                    ),
+
+                    child: SectionWidget(
+                      title: 'Description',
+                      child: Text(repo.description!),
+                    ),
+                  ),
+                ),
                 SizedBox(height: Dimens.paddingMedium),
               ],
-          
-              _Section(
-                title: 'Other details',
-                child: Wrap(
-                  spacing: Dimens.paddingMedium,
-                  runSpacing: Dimens.paddingSmall,
-                  alignment: WrapAlignment.spaceBetween,
-                  children: [
-                    if (repo.language != null)
-                      InfoChip(
-                        icon: Icon(Icons.code),
-                        label: Text(repo.language!),
-                      ),
-                    InfoChip(
-                      icon: Icon(Icons.star_border_outlined),
-                      label: Text("${repo.stars} Stars"),
+
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: Dimens.paddingSmall,
+                    horizontal: Dimens.paddingMedium,
+                  ),
+                  child: SectionWidget(
+                    title: 'Other details',
+                    child: Wrap(
+                      spacing: Dimens.paddingMedium,
+                      runSpacing: Dimens.paddingSmall,
+                      alignment: WrapAlignment.spaceBetween,
+                      children: [
+                        if (repo.language != null)
+                          InfoChip(
+                            icon: Icon(Icons.code),
+                            label: Text(repo.language!),
+                          ),
+                        InfoChip(
+                          icon: Icon(Icons.star_border_outlined),
+                          label: Text("${repo.stars} Stars"),
+                        ),
+                        InfoChip(
+                          icon: Icon(Icons.call_split_rounded),
+                          label: Text("${repo.forks} Forks"),
+                        ),
+                        //   ],
+                        // ),
+
+                        // SizedBox(height: 16,),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //   children: [
+                        InfoChip(
+                          icon: Icon(Icons.error_outline_rounded),
+                          label: Text("${repo.openIssues} Open issues"),
+                        ),
+                        InfoChip(
+                          icon: Icon(Icons.remove_red_eye_outlined),
+                          label: Text("${repo.watchers} Watchers"),
+                        ),
+                        InfoChip(
+                          icon: Icon(Icons.subscriptions_outlined),
+                          label: Text("${repo.subscribersCount} Subscribers"),
+                        ),
+                        InfoChip(
+                          icon: Icon(Icons.people_outline_rounded),
+                          label: Text("${repo.networkCount} Networks"),
+                        ),
+                      ],
                     ),
-                    InfoChip(
-                      icon: Icon(Icons.call_split_rounded),
-                      label: Text("${repo.forks} Forks"),
-                    ),
-                    //   ],
-                    // ),
-          
-                    // SizedBox(height: 16,),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: [
-                    InfoChip(
-                      icon: Icon(Icons.error_outline_rounded),
-                      label: Text("${repo.openIssues} Open issues"),
-                    ),
-                    InfoChip(
-                      icon: Icon(Icons.remove_red_eye_outlined),
-                      label: Text("${repo.watchers} Watchers"),
-                    ),
-                    InfoChip(
-                      icon: Icon(Icons.subscriptions_outlined),
-                      label: Text("${repo.subscribersCount} Subscribers"),
-                    ),
-                    InfoChip(
-                      icon: Icon(Icons.people_outline_rounded),
-                      label: Text("${repo.networkCount} Networks"),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -186,31 +207,5 @@ class RepositoryPage extends StatelessWidget {
     }
 
     return Center(child: Text("Repository is null"));
-  }
-}
-
-class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          Padding(padding: const EdgeInsets.all(8.0), child: child),
-        ],
-      ),
-    );
   }
 }
