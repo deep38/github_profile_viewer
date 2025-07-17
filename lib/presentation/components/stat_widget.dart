@@ -13,13 +13,13 @@ class StatWidget extends StatelessWidget {
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       Text(
-        title,
+        value,
         style: Theme.of(
           context,
         ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
       ),
       Text(
-        value,
+        title,
         style: Theme.of(
           context,
         ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).hintColor),

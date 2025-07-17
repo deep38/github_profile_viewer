@@ -5,7 +5,7 @@ import 'package:github_profile_viewer/presentation/components/error_indicator.da
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
 import 'package:github_profile_viewer/presentation/components/repo_card.dart';
 import 'package:github_profile_viewer/presentation/components/repository_list_header.dart';
-import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
+import 'package:github_profile_viewer/presentation/components/responsive_layout.dart';
 import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
@@ -42,7 +42,7 @@ class ProfilePage extends StatelessWidget {
               error: controller.error.value,
               onRetry: () => _loadUserData(controller),
             ),
-            success: ResponsivePage(
+            success: ResponsiveLayout(
               headerFlex: 2,
               bodyFlex: 3,
               headerBuilder: (constraints) {

@@ -15,17 +15,17 @@ class ErrorIndicator extends StatelessWidget {
     return Center(
       child: switch (error) {
         NoNetworkException _ => _buildErrorWidget(
-          AssetImage('images/error/no_internet_connection.png'),
+          AssetImage('assets/images/error/no_internet_connection.png'),
           Strings.noInternetConnectionErrorMessage,
           true,
           onRetry,
         ),
         UserNotFoundException _ => _buildErrorWidget(
-          AssetImage('images/error/not_found.png'),
+          AssetImage('assets/images/error/not_found.png'),
           Strings.userNotFoundErrorMessage,
         ),
         _ => _buildErrorWidget(
-          AssetImage('images/error/unexpected_error.png'),
+          AssetImage('assets/images/error/unexpected_error.png'),
           Strings.unexpectedErrorMessage,
           true,
           onRetry,
@@ -41,26 +41,31 @@ class ErrorIndicator extends StatelessWidget {
     VoidCallback? onRetry,
   ]) {
     return LayoutBuilder(
-      builder: (context, constraints) => Column(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 8.0,
-        children: [
-          Image(
-            image: image,
-            width: min(300, constraints.maxWidth / 3),
-            errorBuilder: (context, error, stackTrace) => Tooltip(message: "Failed to load image.", child: Icon(Icons.broken_image_outlined, semanticLabel: "Failed to load image.",)),
+      builder: (context, constraints) => SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8.0,
+            children: [
+              Image(
+                image: image,
+                width: min(200, constraints.maxWidth / 3),
+                errorBuilder: (context, error, stackTrace) => Tooltip(message: "Failed to load image.", child: Icon(Icons.broken_image_outlined, semanticLabel: "Failed to load image.",)),
+              ),
+              Text(
+                message,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+              ),
+              if (canRetry) ...[
+                SizedBox(height: 16.0),
+                OutlinedButton(onPressed: onRetry, child: Text("Retry")),
+              ],
+            ],
           ),
-          Text(
-            message,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
-          ),
-          if (canRetry) ...[
-            SizedBox(height: 16.0),
-            OutlinedButton(onPressed: onRetry, child: Text("Retry")),
-          ],
-        ],
+        ),
       ),
     );
   }
