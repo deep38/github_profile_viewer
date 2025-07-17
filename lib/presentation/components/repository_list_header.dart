@@ -44,7 +44,7 @@ class RepositoryListHeader extends StatelessWidget {
               items: SortBy.values.map((sortOrder) {
                 return DropdownMenuItem<SortBy>(
                   value: sortOrder,
-                  child: Text(sortOrder.title),
+                  child: Text(sortOrder.title, style: Theme.of(context).textTheme.bodyMedium,),
                 );
               }).toList(),
               value: sortBy,
@@ -57,7 +57,7 @@ class RepositoryListHeader extends StatelessWidget {
               items: SortOrder.values.map((sortOrder) {
                 return DropdownMenuItem<SortOrder>(
                   value: sortOrder,
-                  child: Text(sortOrder.name),
+                  child: Text(sortOrder.name, style: Theme.of(context).textTheme.bodyMedium),
                 );
               }).toList(),
               value: sortOrder,
@@ -70,6 +70,7 @@ class RepositoryListHeader extends StatelessWidget {
           padding: WidgetStatePropertyAll(
             EdgeInsets.symmetric(vertical: 4, horizontal: Dimens.paddingSmall),
           ),
+          elevation: WidgetStatePropertyAll(0),
           onChanged: (v) {
             onSearchQueryChange(v);},
           leading: Icon(Icons.search_rounded),
