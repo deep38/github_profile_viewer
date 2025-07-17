@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
 
-class ResponsivePage extends StatelessWidget {
-  const ResponsivePage({
+class ResponsiveLayout extends StatelessWidget {
+  const ResponsiveLayout({
     super.key,
     required this.headerBuilder,
     required this.bodyBuilder,

@@ -15,17 +15,17 @@ class ErrorIndicator extends StatelessWidget {
     return Center(
       child: switch (error) {
         NoNetworkException _ => _buildErrorWidget(
-          AssetImage('images/error/no_internet_connection.png'),
+          AssetImage('assets/images/error/no_internet_connection.png'),
           Strings.noInternetConnectionErrorMessage,
           true,
           onRetry,
         ),
         UserNotFoundException _ => _buildErrorWidget(
-          AssetImage('images/error/not_found.png'),
+          AssetImage('assets/images/error/not_found.png'),
           Strings.userNotFoundErrorMessage,
         ),
         _ => _buildErrorWidget(
-          AssetImage('images/error/unexpected_error.png'),
+          AssetImage('assets/images/error/unexpected_error.png'),
           Strings.unexpectedErrorMessage,
           true,
           onRetry,

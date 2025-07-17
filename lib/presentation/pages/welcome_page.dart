@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:github_profile_viewer/presentation/components/responsive_page.dart';
+import 'package:github_profile_viewer/presentation/components/responsive_layout.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/extensions.dart';
 
@@ -40,7 +40,7 @@ class WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
     return Scaffold(
-      body: ResponsivePage(
+      body: ResponsiveLayout(
         headerBuilder: (_) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
