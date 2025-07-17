@@ -27,6 +27,7 @@ Future<void> testUsernameInputFormWithValidUsername(WidgetTester tester) async {
 
   await tester.enterText(usernameField, "octate");
   await tester.tap(submitButton);
+  await tester.pump();
 
   expect(find.text("Invalid username"), findsNothing);
   expect(find.text("Username is too long"), findsNothing);
@@ -45,8 +46,9 @@ Future<void> testUsernameInputFormWithInvalidUsername(
 
   await tester.enterText(usernameField, "-oct#ate");
   await tester.tap(submitButton);
+  await tester.pump();
 
-  expect(find.text("Invalide username. Username can only contain alphabets, numbers and -(hyphen)"), findsOne);
+  expect(find.text("Invalide username. Username can only contain alphabets, numbers and single -(hyphen) inbetween."), findsOne);
 }
 
 Future<void> testUsernameInputFormWithVeryLongUsername(WidgetTester tester) async {
@@ -63,6 +65,7 @@ Future<void> testUsernameInputFormWithVeryLongUsername(WidgetTester tester) asyn
       "octatsflaldfsflsfjlslakdfkloeowlsdofodaldflelefldfsle",
     );
     await tester.tap(submitButton);
+  await tester.pump();
 
     expect(find.text("Username is too long. it must be less than 40 characters."), findsOne);
   }
