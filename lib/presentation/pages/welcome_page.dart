@@ -79,6 +79,9 @@ class WelcomePage extends StatelessWidget {
                         maxWidth: Dimens.mediumWidth,
                       ),
                     ),
+
+                    textInputAction: TextInputAction.go,
+                    onFieldSubmitted: (_) => onSubmit(),
                   ),
               
                   if (isLargeWidth) SizedBox(height: Dimens.paddingMedium),
