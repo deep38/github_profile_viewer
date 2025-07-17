@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:github_profile_viewer/presentation/components/error_indicator.dart';
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
 import 'package:github_profile_viewer/presentation/components/repo_card.dart';
 import 'package:github_profile_viewer/presentation/components/repository_list_header.dart';
-import 'package:github_profile_viewer/presentation/components/responsive_layout.dart';
+import 'package:github_profile_viewer/presentation/components/section_widget.dart';
 import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
@@ -29,7 +30,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(),
       body: GetX<ProfilePageController>(
         initState: (state) {
@@ -42,26 +43,29 @@ class ProfilePage extends StatelessWidget {
               error: controller.error.value,
               onRetry: () => _loadUserData(controller),
             ),
-            success: ResponsiveLayout(
-              headerFlex: 2,
-              bodyFlex: 3,
-              headerBuilder: (constraints) {
-                final header = _buildUserProfileHeader(
-                  context,
-                  controller.user.value,
-                  controller.openUrl,
-                );
+            // initial: SliverToBoxAdapter(),
+            // loading: SliverToBoxAdapter(child: Center(child: CircularProgressIndicator.adaptive()),),
+            success: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _buildUserProfileHeader(
+                    context,
+                    controller.user.value,
+                    controller.openUrl,
+                  ),
+                ),
 
-                return constraints.maxWidth > Dimens.mediumWidth
-                    ? SingleChildScrollView(child: header)
-                    : header;
-              },
-              bodyBuilder: (_) => Obx(
-                () => LoadingStateWidget(
+                LoadingStateWidget(
                   state: controller.reposLoadingState.value,
-                  error: ErrorIndicator(
-                    error: controller.error.value,
-                    onRetry: controller.reloadRepos,
+                  error: SliverToBoxAdapter(
+                    child: ErrorIndicator(
+                      error: controller.error.value,
+                      onRetry: controller.reloadRepos,
+                    ),
+                  ),
+                  initial: SliverToBoxAdapter(),
+                  loading: SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator.adaptive()),
                   ),
                   success: _buildRepoList(
                     context,
@@ -76,8 +80,50 @@ class ProfilePage extends StatelessWidget {
                     controller.onClearSearch,
                   ),
                 ),
-              ),
+              ],
             ),
+            // ResponsiveLayout(
+            //   headerFlex: 2,
+            //   bodyFlex: 3,
+            //   headerBuilder: (constraints) {
+            //     final header = SliverToBoxAdapter(
+            //       child: _buildUserProfileHeader(
+            //         context,
+            //         controller.user.value,
+            //         controller.openUrl,
+            //       ),
+            //     );
+
+            //     return constraints.maxWidth > Dimens.mediumWidth
+            //         ? SingleChildScrollView(child: header)
+            //         : header;
+            //   },
+            //   bodyBuilder: (_) => Obx(
+            //     () => LoadingStateWidget(
+            //       state: controller.reposLoadingState.value,
+            //       error: SliverToBoxAdapter(
+            //         child: ErrorIndicator(
+            //           error: controller.error.value,
+            //           onRetry: controller.reloadRepos,
+            //         ),
+            //       ),
+            //       initial: SliverToBoxAdapter(),
+            //       loading: SliverToBoxAdapter(child: CircularProgressIndicator.adaptive(),),
+            //       success: _buildRepoList(
+            //         context,
+            //         controller.user.value?.username,
+            //         controller.repos.value,
+            //         controller.currentSortBy.value,
+            //         controller.currentSortOrder.value,
+            //         controller.searchTextEditingController,
+            //         controller.filterRepos,
+            //         controller.onSortByChange,
+            //         controller.onSortOrderChange,
+            //         controller.onClearSearch,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           );
         },
       ),
@@ -119,38 +165,54 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: Dimens.paddingSmall),
+
+            Card(
+              elevation: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    StatWidget(
+                      title: "Followers",
+                      value: user.followers.toString(),
+                    ),
+                    StatWidget(
+                      title: "Followings",
+                      value: user.following.toString(),
+                    ),
+                    StatWidget(
+                      title: "Public repos",
+                      value: user.publicRepos.toString(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
             if (user.bio != null) ...[
               const SizedBox(height: Dimens.paddingSmall),
 
-              Text(
-                user.bio!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).hintColor,
+              Card(
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SectionWidget(
+                    title: 'About',
+                    child: Text(
+                      user.bio!,
+                      maxLines: 5,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
 
-            const SizedBox(height: Dimens.paddingLarge),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                StatWidget(
-                  title: "Followers",
-                  value: user.followers.toString(),
-                ),
-                StatWidget(
-                  title: "Followings",
-                  value: user.following.toString(),
-                ),
-                StatWidget(
-                  title: "Public repos",
-                  value: user.publicRepos.toString(),
-                ),
-              ],
-            ),
+            Divider(),
           ],
         ),
       );
@@ -173,49 +235,58 @@ Widget _buildRepoList(
   VoidCallback onClearSearch,
 ) {
   if (repos != null) {
-    return Padding(
+    return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RepositoryListHeader(
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            onSearchQueryChange: onSearchQueryChange,
-            onSortByChange: onSortByChange,
-            onSortOrderChange: onSortOrderChange,
-            searchTextEditingController: searchTextEditingController,
-            onClearSearch: onClearSearch,
+      sliver: SliverStickyHeader(
+        header: ColoredBox(
+          color: Theme.of(context).canvasColor,
+          child: Column(
+            children: [
+              RepositoryListHeader(
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+                onSearchQueryChange: onSearchQueryChange,
+                onSortByChange: onSortByChange,
+                onSortOrderChange: onSortOrderChange,
+                searchTextEditingController: searchTextEditingController,
+                onClearSearch: onClearSearch,
+              ),
+              Divider(),
+            ],
           ),
-          SizedBox(height: Dimens.paddingSmall),
-          Flexible(
-            child: repos.isNotEmpty
-                ? ListView.builder(
-                    padding: EdgeInsets.zero,
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    itemCount: repos.length,
-                    itemBuilder: (builderContext, index) {
-                      final repo = repos[index];
-                      return RepoCard(
-                        repo: repo,
-                        onClick: () {
-                          if (username == null) {
-                            Get.snackbar(
-                              "Navigating to repository",
-                              "Username not provided",
-                            );
-                            return;
-                          }
-                          Get.toNamed('/repo/$username/${repo.name}');
-                        },
-                      );
+        ),
+        sliver: repos.isNotEmpty
+            ? SliverList.builder(
+                // padding: EdgeInsets.zero,
+                // keyboardDismissBehavior:
+                //     ScrollViewKeyboardDismissBehavior.onDrag,
+                itemCount: repos.length,
+                itemBuilder: (builderContext, index) {
+                  final repo = repos[index];
+                  return RepoCard(
+                    repo: repo,
+                    onClick: () {
+                      if (username == null) {
+                        Get.snackbar(
+                          "Navigating to repository",
+                          "Username not provided",
+                        );
+                        return;
+                      }
+                      Get.toNamed('/repo/$username/${repo.name}');
                     },
+                  );
+                },
+              )
+            : SliverFillRemaining(
+                child: Center(child: Text(
+                  searchTextEditingController.text.isEmpty
+                  ? Strings.repositoryListEmptyMessage
+                  : Strings.noItemsMatchYourSearch,
+                  textAlign: TextAlign.center,
                   )
-                : Center(child: Text(Strings.emptyListMessage)),
-          ),
-        ],
+                  ),
+              ),
       ),
     );
   }

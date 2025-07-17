@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_layout.dart';
@@ -41,80 +42,155 @@ class WelcomePage extends StatelessWidget {
     // final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
     return Scaffold(
       body: ResponsiveLayout(
-        headerBuilder: (_) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("GitHub", style: Theme.of(context).textTheme.displayLarge),
-              Text(
-                "PROFILE VIEWER",
-                style: Theme.of(context).textTheme.labelMedium,
+        headerBuilder: (_) => Stack(
+          children: [
+            ClipPath(
+              clipper: _WaveClipper(),
+              child: Container(
+                // transform: Mat,
+                color: Theme.of(context).colorScheme.primaryContainer,
               ),
-            ],
-          ),
+            ),
+
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "GitHub",
+                    style: Theme.of(context).textTheme.displayLarge,
+                  ),
+                  Text(
+                    "PROFILE VIEWER",
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         bodyBuilder: (constraints) {
           final isLargeWidth = constraints.maxWidth > Dimens.mediumWidth;
 
           final form = Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: isLargeWidth
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.spaceBetween,
-                children: [
-                  TextFormField(
-                    key: Key(Strings.welcomePageUserNameFieldKey),
-                    controller: _usernameTextEditingController,
-                    validator: _usernameValidator,
-                    decoration: InputDecoration(
-                      labelText: "Username",
-                      hintText: "Enter username",
-                      errorMaxLines: 2,
-                      border: OutlineInputBorder(),
-                      constraints: BoxConstraints(
-                        minWidth: min(
-                          Dimens.mediumWidth,
-                          max(MediaQuery.of(context).size.width, 36.0),
-                        ),
-                        maxWidth: Dimens.mediumWidth,
-                      ),
+            mainAxisSize: MainAxisSize.max,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            // : MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(height: Dimens.paddingLarge),
+              Text('Just enter username to'),
+              AnimatedTextKit(
+                repeatForever: true,
+                
+                animatedTexts: [
+                  TyperAnimatedText(
+                    'Search.',
+                    textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
                     ),
-
-                    textInputAction: TextInputAction.go,
-                    onFieldSubmitted: (_) => onSubmit(),
+                    speed: Duration(milliseconds: 100)
                   ),
-              
-                  if (isLargeWidth) SizedBox(height: Dimens.paddingMedium),
-              
-                  ElevatedButton(
-                    key: Key(Strings.welcomePageUsernameSubmitButtonKey),
-                    onPressed: onSubmit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      fixedSize: Size.fromWidth(
-                        MediaQuery.of(context).size.width,
-                      ),
-                      maximumSize: Size.fromWidth(Dimens.mediumWidth),
+
+                  TyperAnimatedText(
+                    'Explore.',
+                    textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
                     ),
-                    child: const Text(Strings.viewProfileButtonText),
+                    speed: Duration(milliseconds: 100)
+                  ),
+
+                  TyperAnimatedText(
+                    'Connect.',
+                    textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    speed: Duration(milliseconds: 100)
                   ),
                 ],
-              );
+              ),
+              SizedBox(height: Dimens.paddingLarge),
+              TextFormField(
+                key: Key(Strings.welcomePageUserNameFieldKey),
+                controller: _usernameTextEditingController,
+                validator: _usernameValidator,
+                decoration: InputDecoration(
+                  labelText: "Username",
+                  hintText: "Enter username",
+                  errorMaxLines: 2,
+                  border: OutlineInputBorder(),
+                  constraints: BoxConstraints(
+                    minWidth: min(
+                      Dimens.mediumWidth,
+                      max(MediaQuery.of(context).size.width, 36.0),
+                    ),
+                    maxWidth: Dimens.mediumWidth,
+                  ),
+                ),
+
+                textInputAction: TextInputAction.go,
+                onFieldSubmitted: (_) => onSubmit(),
+              ),
+
+              SizedBox(height: Dimens.paddingMedium),
+
+              ElevatedButton(
+                key: Key(Strings.welcomePageUsernameSubmitButtonKey),
+                onPressed: onSubmit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  fixedSize: Size.fromWidth(MediaQuery.of(context).size.width),
+                  maximumSize: Size.fromWidth(Dimens.mediumWidth),
+                ),
+                child: const Text(Strings.viewProfileButtonText),
+              ),
+            ],
+          );
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Dimens.paddingMedium,
+            ),
             child: Form(
               key: _formKey,
-              child: isLargeWidth
-              ? SingleChildScrollView(
-                child: form,
-              )
-              : form
-            )
+              child: isLargeWidth ? SingleChildScrollView(child: form) : form,
+            ),
           );
         },
       ),
     );
+  }
+}
+
+class _WaveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    debugPrint('Width: ${size.width}');
+    final path = Path();
+
+    path.lineTo(0, size.height - (size.height / 6));
+
+    final firstPoint = Point<double>(0, size.height - (size.height / 6));
+    final secondPoint = Point<double>(size.width / 2, size.height);
+    final thirdPoint = Point<double>(
+      size.width,
+      size.height - (size.height / 6),
+    );
+    path.cubicTo(
+      firstPoint.x,
+      firstPoint.y,
+      secondPoint.x,
+      secondPoint.y,
+      thirdPoint.x,
+      thirdPoint.y,
+    );
+
+    path.lineTo(size.width, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
   }
 }

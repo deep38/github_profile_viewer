@@ -12,7 +12,7 @@ void main() {
       // print('Status Code: ${response.statusCode}');
       // print('Response Body: ${response}');
 
-      expect(await githubApiService.getUser("-deep"), throwsA(isA<UserNotFoundException>()), reason: 'Expected HTTP 404 NOT FOUND');
+      expect(await githubApiService.getUser("-deep"), throwsA(isA<NotFoundException>()), reason: 'Expected HTTP 404 NOT FOUND');
 
       // try {
       //   final decoded = json.decode(response.body);

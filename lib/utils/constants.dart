@@ -8,12 +8,15 @@ sealed class Strings {
   static const invalidUserNameErrorMessage = 'Invalide username. Username can only contain alphabets, numbers and single -(hyphen) inbetween.';
   static const tooLongUserNameErrorMessage = 'Username is too long. it must be less than 40 characters.';
   static const userNotFoundErrorMessage = 'User not found.';
+  static const repositoryListNotFoundErrorMessage = 'Repository list not found.';
+  static const repositoryNotFoundErrorMessage = 'Repository not found.';
   static const noInternetConnectionErrorMessage = 'No internet connection. Check your connectivity then refresh.';
   static const unexpectedErrorMessage = 'Something went wrong. Please try again.';
 
   // UI Text
   static const viewProfileButtonText = 'View Profile';
-  static const emptyListMessage = 'Nothing to show here.';
+  static const repositoryListEmptyMessage = 'No repository found for this user.';
+  static const noItemsMatchYourSearch = 'No items matches your search.';
 
   // Key Strings
   static const welcomePageUsernameSubmitButtonKey = 'usernameSubmitButton';

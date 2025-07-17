@@ -4,10 +4,10 @@ import 'package:github_profile_viewer/domain/service/github_data_service.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
 import 'package:github_profile_viewer/presentation/model/repository.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/exceptions.dart';
 
 class GithubDataRepository {
-
   GithubDataRepository(this.service);
 
   final GithubDataService service;
@@ -18,9 +18,15 @@ class GithubDataRepository {
     if (response.status.connectionError) {
       throw NoNetworkException();
     } else if (response.status.isNotFound) {
-      throw UserNotFoundException();
+      throw NotFoundException(message: Strings.userNotFoundErrorMessage);
+    } else if (response.bodyString == null) {
+      throw Exception("Response is empty");
     }
-    return User.fromJson(response.bodyString!);
+    try {
+      return User.fromJson(response.bodyString!);
+    } catch (e) {
+      throw Exception('Failed to parse json.');
+    }
   }
 
   Future<List<RepoMini>> getRepos(String username) async {
@@ -28,15 +34,21 @@ class GithubDataRepository {
     if (response.status.connectionError) {
       throw NoNetworkException();
     } else if (response.status.isNotFound) {
-      throw UserNotFoundException();
+      throw NotFoundException(message: Strings.repositoryListNotFoundErrorMessage);
+    } else if (response.bodyString == null) {
+      throw Exception("Response is empty");
     }
-    
-    final responseJson = jsonDecode(response.bodyString!);
-    
-    if (responseJson is List) {
-      return responseJson.map((e) => RepoMini.fromMap(e)).toList();
-    } else {
-      throw Exception("Unexpected response.");
+
+    try {
+      final responseJson = jsonDecode(response.bodyString!);
+
+      if (responseJson is List) {
+        return responseJson.map((e) => RepoMini.fromMap(e)).toList();
+      } else {
+        throw Exception("Unexpected response.");
+      }
+    } catch (e) {
+      throw Exception('Failed to parse json.');
     }
   }
 
@@ -45,13 +57,12 @@ class GithubDataRepository {
     if (response.status.connectionError) {
       throw NoNetworkException();
     } else if (response.status.isNotFound) {
-      throw UserNotFoundException();
+      throw NotFoundException(message: Strings.repositoryNotFoundErrorMessage);
+    } else if (response.bodyString == null) {
+      throw Exception("Response is empty");
     }
-    
+
     try {
-      if (response.bodyString == null) {
-        throw Exception("Response is empty");
-      }
       return Repository.fromJson(response.bodyString!);
     } catch (e) {
       throw Exception("Failed parse json.");

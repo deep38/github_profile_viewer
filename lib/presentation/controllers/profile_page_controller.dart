@@ -76,7 +76,7 @@ class ProfilePageController extends GetxController {
   void filterRepos(String query) {
     searchTextEditingController.text = query;
 
-    repos.value = _repos?.where((repo) => repo.name.contains(query)).toList();
+    repos.value = _repos?.where((repo) => repo.name.contains(query.trim())).toList();
   }
 
   void onClearSearch() {
