@@ -41,26 +41,31 @@ class ErrorIndicator extends StatelessWidget {
     VoidCallback? onRetry,
   ]) {
     return LayoutBuilder(
-      builder: (context, constraints) => Column(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 8.0,
-        children: [
-          Image(
-            image: image,
-            width: min(300, constraints.maxWidth / 3),
-            errorBuilder: (context, error, stackTrace) => Tooltip(message: "Failed to load image.", child: Icon(Icons.broken_image_outlined, semanticLabel: "Failed to load image.",)),
+      builder: (context, constraints) => SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8.0,
+            children: [
+              Image(
+                image: image,
+                width: min(200, constraints.maxWidth / 3),
+                errorBuilder: (context, error, stackTrace) => Tooltip(message: "Failed to load image.", child: Icon(Icons.broken_image_outlined, semanticLabel: "Failed to load image.",)),
+              ),
+              Text(
+                message,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+              ),
+              if (canRetry) ...[
+                SizedBox(height: 16.0),
+                OutlinedButton(onPressed: onRetry, child: Text("Retry")),
+              ],
+            ],
           ),
-          Text(
-            message,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
-          ),
-          if (canRetry) ...[
-            SizedBox(height: 16.0),
-            OutlinedButton(onPressed: onRetry, child: Text("Retry")),
-          ],
-        ],
+        ),
       ),
     );
   }
