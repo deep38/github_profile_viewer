@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:github_profile_viewer/data/api/github_api_service.dart';
 import 'package:github_profile_viewer/domain/repos/github_data_repository.dart';
 import 'package:github_profile_viewer/domain/service/github_data_service.dart';

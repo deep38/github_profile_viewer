@@ -186,7 +186,6 @@ class _FormHeading extends StatelessWidget {
 class _WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    debugPrint('Width: ${size.width}');
     final path = Path();
 
     path.lineTo(0, size.height - (size.height / 6));

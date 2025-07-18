@@ -27,10 +27,10 @@ class User {
     String? username,
     String? bio,
     String? location,
-    String? avatar,
-    int? publicRepositoryCount,
-    int? followersCount,
-    int? followingCount,
+    String? avatarUrl,
+    int? publicRepos,
+    int? followers,
+    int? following,
     String? profileLink,
   }) {
     return User(
@@ -38,10 +38,10 @@ class User {
       username: username ?? this.username,
       bio: bio ?? this.bio,
       location: location ?? this.location,
-      avatarUrl: avatar ?? this.avatarUrl,
-      publicRepos: publicRepositoryCount ?? this.publicRepos,
-      followers: followersCount ?? this.followers,
-      following: followingCount ?? this.following,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      publicRepos: publicRepos ?? this.publicRepos,
+      followers: followers ?? this.followers,
+      following: following ?? this.following,
       profileLink: profileLink ?? this.profileLink,
     );
   }
