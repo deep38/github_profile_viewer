@@ -42,6 +42,8 @@ class WelcomePage extends StatelessWidget {
     // final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
     return Scaffold(
       body: ResponsiveLayout(
+        headerFlex: 3,
+        bodyFlex: 4,
         headerBuilder: (_) => Stack(
           children: [
             ClipPath(
@@ -72,79 +74,55 @@ class WelcomePage extends StatelessWidget {
         bodyBuilder: (constraints) {
           final isLargeWidth = constraints.maxWidth > Dimens.mediumWidth;
 
-          final form = Column(
-            mainAxisSize: MainAxisSize.max,
-            // mainAxisAlignment: MainAxisAlignment.center,
-            // : MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(height: Dimens.paddingLarge),
-              Text('Just enter username to'),
-              AnimatedTextKit(
-                repeatForever: true,
-                
-                animatedTexts: [
-                  TyperAnimatedText(
-                    'Search.',
-                    textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
+          final form = Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Dimens.paddingMedium,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(height: Dimens.paddingLarge),
+                _FormHeading(),
+                SizedBox(height: Dimens.paddingLarge * 2),
+                TextFormField(
+                  key: Key(Strings.welcomePageUserNameFieldKey),
+                  controller: _usernameTextEditingController,
+                  validator: _usernameValidator,
+                  decoration: InputDecoration(
+                    labelText: "Username",
+                    hintText: "Enter username",
+                    errorMaxLines: 2,
+                    border: OutlineInputBorder(),
+                    constraints: BoxConstraints(
+                      minWidth: min(
+                        Dimens.mediumWidth,
+                        max(MediaQuery.of(context).size.width, 36.0),
+                      ),
+                      maxWidth: Dimens.mediumWidth,
                     ),
-                    speed: Duration(milliseconds: 100)
                   ),
 
-                  TyperAnimatedText(
-                    'Explore.',
-                    textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    speed: Duration(milliseconds: 100)
-                  ),
-
-                  TyperAnimatedText(
-                    'Connect.',
-                    textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    speed: Duration(milliseconds: 100)
-                  ),
-                ],
-              ),
-              SizedBox(height: Dimens.paddingLarge),
-              TextFormField(
-                key: Key(Strings.welcomePageUserNameFieldKey),
-                controller: _usernameTextEditingController,
-                validator: _usernameValidator,
-                decoration: InputDecoration(
-                  labelText: "Username",
-                  hintText: "Enter username",
-                  errorMaxLines: 2,
-                  border: OutlineInputBorder(),
-                  constraints: BoxConstraints(
-                    minWidth: min(
-                      Dimens.mediumWidth,
-                      max(MediaQuery.of(context).size.width, 36.0),
-                    ),
-                    maxWidth: Dimens.mediumWidth,
-                  ),
+                  textInputAction: TextInputAction.go,
+                  onFieldSubmitted: (_) => onSubmit(),
                 ),
 
-                textInputAction: TextInputAction.go,
-                onFieldSubmitted: (_) => onSubmit(),
-              ),
+                SizedBox(height: Dimens.paddingMedium),
 
-              SizedBox(height: Dimens.paddingMedium),
-
-              ElevatedButton(
-                key: Key(Strings.welcomePageUsernameSubmitButtonKey),
-                onPressed: onSubmit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  fixedSize: Size.fromWidth(MediaQuery.of(context).size.width),
-                  maximumSize: Size.fromWidth(Dimens.mediumWidth),
+                ElevatedButton(
+                  key: Key(Strings.welcomePageUsernameSubmitButtonKey),
+                  onPressed: onSubmit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    fixedSize: Size.fromWidth(
+                      MediaQuery.of(context).size.width,
+                    ),
+                    maximumSize: Size.fromWidth(Dimens.mediumWidth),
+                  ),
+                  child: const Text(Strings.viewProfileButtonText),
                 ),
-                child: const Text(Strings.viewProfileButtonText),
-              ),
-            ],
+              ],
+            ),
           );
 
           return Padding(
@@ -158,6 +136,49 @@ class WelcomePage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _FormHeading extends StatelessWidget {
+  const _FormHeading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('Just enter username to'),
+        AnimatedTextKit(
+          repeatForever: true,
+
+          animatedTexts: [
+            TyperAnimatedText(
+              'Search.',
+              textStyle: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
+              speed: Duration(milliseconds: 100),
+            ),
+
+            TyperAnimatedText(
+              'Explore.',
+              textStyle: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
+              speed: Duration(milliseconds: 100),
+            ),
+
+            TyperAnimatedText(
+              'Connect.',
+              textStyle: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
+              speed: Duration(milliseconds: 100),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

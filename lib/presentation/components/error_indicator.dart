@@ -50,7 +50,7 @@ class ErrorIndicator extends StatelessWidget {
             children: [
               Image(
                 image: image,
-                width: min(200, constraints.maxWidth / 3),
+                width: min(200, constraints.maxWidth / 2),
                 errorBuilder: (context, error, stackTrace) => Tooltip(message: "Failed to load image.", child: Icon(Icons.broken_image_outlined, semanticLabel: "Failed to load image.",)),
               ),
               Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:github_profile_viewer/presentation/components/error_indicator.dart';
 import 'package:github_profile_viewer/presentation/components/info_chip.dart';
 import 'package:github_profile_viewer/presentation/components/loading_state_widget.dart';
 import 'package:github_profile_viewer/presentation/components/section_widget.dart';
@@ -12,7 +13,7 @@ import 'package:github_profile_viewer/utils/extensions.dart';
 class RepositoryPage extends StatelessWidget {
   const RepositoryPage({super.key});
 
-  void _loadUserData(RepositoryPageController? controller) {
+  void _loadRepositoryData(RepositoryPageController? controller) {
     final username = Get.parameters['username'];
     final reponame = Get.parameters['reponame'];
     if (username != null && reponame != null) {
@@ -28,9 +29,9 @@ class RepositoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text('Repository')),
       body: GetX<RepositoryPageController>(
-        initState: (state) => _loadUserData(state.controller),
+        initState: (state) => _loadRepositoryData(state.controller),
         builder: (controller) {
           return Padding(
             padding: EdgeInsets.only(
@@ -40,10 +41,13 @@ class RepositoryPage extends StatelessWidget {
             ),
             child: LoadingStateWidget(
               state: controller.loadingState.value,
-              success: _buildSuccess(
-                context,
-                controller.repo.value,
-                controller.openUrl,
+              error: ErrorIndicator(
+                error: controller.error.value,
+                onRetry: () => _loadRepositoryData(controller),
+              ),
+              success: _RepositoryInfo(
+                repository: controller.repo.value,
+                openUrl: controller.openUrl,
               ),
             ),
           );
@@ -51,12 +55,17 @@ class RepositoryPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildSuccess(
-    BuildContext context,
-    Repository? repo,
-    void Function(String) openUrl,
-  ) {
+class _RepositoryInfo extends StatelessWidget {
+  const _RepositoryInfo({required this.repository, required this.openUrl});
+
+  final Repository? repository;
+  final void Function(String) openUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = repository;
     if (repo != null) {
       final subtitleTextStyle = Theme.of(
         context,
@@ -77,7 +86,7 @@ class RepositoryPage extends StatelessWidget {
                       foregroundImage: NetworkImage(repo.owner.avatarUrl),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  SizedBox(width: Dimens.paddingMedium),
                   Expanded(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -172,13 +181,6 @@ class RepositoryPage extends StatelessWidget {
                           icon: Icon(Icons.call_split_rounded),
                           label: Text("${repo.forks} Forks"),
                         ),
-                        //   ],
-                        // ),
-
-                        // SizedBox(height: 16,),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        //   children: [
                         InfoChip(
                           icon: Icon(Icons.error_outline_rounded),
                           label: Text("${repo.openIssues} Open issues"),

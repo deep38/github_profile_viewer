@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:github_profile_viewer/presentation/components/error_indicator.dart';
@@ -30,12 +31,13 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      appBar: AppBar(),
+      appBar: AppBar(title: Text('Profile')),
+
       body: GetX<ProfilePageController>(
         initState: (state) {
           _loadUserData(state.controller);
         },
+
         builder: (controller) {
           return LoadingStateWidget(
             state: controller.userLoadingState.value,
@@ -43,98 +45,75 @@ class ProfilePage extends StatelessWidget {
               error: controller.error.value,
               onRetry: () => _loadUserData(controller),
             ),
-            // initial: SliverToBoxAdapter(),
-            // loading: SliverToBoxAdapter(child: Center(child: CircularProgressIndicator.adaptive()),),
-            success: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: _buildUserProfileHeader(
-                    context,
-                    controller.user.value,
-                    controller.openUrl,
-                  ),
-                ),
 
-                LoadingStateWidget(
-                  state: controller.reposLoadingState.value,
-                  error: SliverToBoxAdapter(
-                    child: ErrorIndicator(
-                      error: controller.error.value,
-                      onRetry: controller.reloadRepos,
-                    ),
+            success: LayoutBuilder(
+              builder: (_, constraints) {
+                final headerSliver = SliverToBoxAdapter(
+                  child: _UserProfileHeader(
+                    nullableUser: controller.user.value,
+                    openUrl: controller.openUrl,
                   ),
-                  initial: SliverToBoxAdapter(),
-                  loading: SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator.adaptive()),
-                  ),
-                  success: _buildRepoList(
-                    context,
-                    controller.user.value?.username,
-                    controller.repos.value,
-                    controller.currentSortBy.value,
-                    controller.currentSortOrder.value,
-                    controller.searchTextEditingController,
-                    controller.filterRepos,
-                    controller.onSortByChange,
-                    controller.onSortOrderChange,
-                    controller.onClearSearch,
-                  ),
-                ),
-              ],
+                );
+
+                final bodySliver = Obx(
+                  () {
+                    return LoadingStateWidget(
+                      state: controller.reposLoadingState.value,
+                      error: SliverToBoxAdapter(
+                        child: ErrorIndicator(
+                          error: controller.error.value,
+                          onRetry: controller.reloadRepos,
+                        ),
+                      ),
+                      initial: SliverToBoxAdapter(),
+                      loading: SliverFillRemaining(
+                        child: Center(child: CircularProgressIndicator.adaptive()),
+                      ),
+                      success: _RepoistoryList(
+                        nullableUsername: controller.user.value?.username,
+                        nullableRepos: controller.repos.value,
+                        sortBy: controller.currentSortBy.value,
+                        sortOrder: controller.currentSortOrder.value,
+                        searchTextEditingController: controller.searchTextEditingController,
+                        onSearchQueryChange: controller.filterRepos,
+                        onSortByChange: controller.onSortByChange,
+                        onSortOrderChange: controller.onSortOrderChange,
+                        onClearSearch: controller.onClearSearch,
+                      ),
+                    );
+                  }
+                );
+
+                return constraints.maxWidth > 500
+                    ? Row(
+                        children: [
+                          Flexible(
+                            child: CustomScrollView(slivers: [headerSliver]),
+                          ),
+                          Flexible(
+                            child: CustomScrollView(slivers: [bodySliver]),
+                          ),
+                        ],
+                      )
+                    : CustomScrollView(slivers: [headerSliver, bodySliver]);
+              },
             ),
-            // ResponsiveLayout(
-            //   headerFlex: 2,
-            //   bodyFlex: 3,
-            //   headerBuilder: (constraints) {
-            //     final header = SliverToBoxAdapter(
-            //       child: _buildUserProfileHeader(
-            //         context,
-            //         controller.user.value,
-            //         controller.openUrl,
-            //       ),
-            //     );
-
-            //     return constraints.maxWidth > Dimens.mediumWidth
-            //         ? SingleChildScrollView(child: header)
-            //         : header;
-            //   },
-            //   bodyBuilder: (_) => Obx(
-            //     () => LoadingStateWidget(
-            //       state: controller.reposLoadingState.value,
-            //       error: SliverToBoxAdapter(
-            //         child: ErrorIndicator(
-            //           error: controller.error.value,
-            //           onRetry: controller.reloadRepos,
-            //         ),
-            //       ),
-            //       initial: SliverToBoxAdapter(),
-            //       loading: SliverToBoxAdapter(child: CircularProgressIndicator.adaptive(),),
-            //       success: _buildRepoList(
-            //         context,
-            //         controller.user.value?.username,
-            //         controller.repos.value,
-            //         controller.currentSortBy.value,
-            //         controller.currentSortOrder.value,
-            //         controller.searchTextEditingController,
-            //         controller.filterRepos,
-            //         controller.onSortByChange,
-            //         controller.onSortOrderChange,
-            //         controller.onClearSearch,
-            //       ),
-            //     ),
-            //   ),
-            // ),
           );
         },
       ),
     );
   }
+}
 
-  Widget _buildUserProfileHeader(
-    BuildContext context,
-    User? user,
-    void Function(String) openUrl,
-  ) {
+class _UserProfileHeader extends StatelessWidget {
+  const _UserProfileHeader({required this.nullableUser, required this.openUrl});
+
+  final User? nullableUser;
+  final void Function(String) openUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = nullableUser;
     if (user != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
@@ -169,6 +148,7 @@ class ProfilePage extends StatelessWidget {
 
             Card(
               elevation: 0,
+              color: context.theme.colorScheme.secondaryContainer,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -196,6 +176,7 @@ class ProfilePage extends StatelessWidget {
 
               Card(
                 elevation: 0,
+                color: context.theme.colorScheme.secondaryContainer,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SectionWidget(
@@ -222,74 +203,91 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-Widget _buildRepoList(
-  BuildContext context,
-  String? username,
-  List<RepoMini>? repos,
-  SortBy sortBy,
-  SortOrder sortOrder,
-  TextEditingController searchTextEditingController,
-  void Function(String) onSearchQueryChange,
-  void Function(SortBy?) onSortByChange,
-  void Function(SortOrder?) onSortOrderChange,
-  VoidCallback onClearSearch,
-) {
-  if (repos != null) {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
-      sliver: SliverStickyHeader(
-        header: ColoredBox(
-          color: Theme.of(context).canvasColor,
-          child: Column(
-            children: [
-              RepositoryListHeader(
-                sortBy: sortBy,
-                sortOrder: sortOrder,
-                onSearchQueryChange: onSearchQueryChange,
-                onSortByChange: onSortByChange,
-                onSortOrderChange: onSortOrderChange,
-                searchTextEditingController: searchTextEditingController,
-                onClearSearch: onClearSearch,
-              ),
-              Divider(),
-            ],
+
+class _RepoistoryList extends StatelessWidget {
+  const _RepoistoryList({
+    required this.nullableUsername,
+    required this.nullableRepos,
+    required this.sortBy,
+    required this.sortOrder,
+    required this.searchTextEditingController,
+    required this.onSearchQueryChange,
+    required this.onSortByChange,
+    required this.onSortOrderChange,
+    required this.onClearSearch,
+  });
+
+  final String? nullableUsername;
+  final List<RepoMini>? nullableRepos;
+  final SortBy sortBy;
+  final SortOrder sortOrder;
+  final TextEditingController searchTextEditingController;
+  final void Function(String) onSearchQueryChange;
+  final void Function(SortBy?) onSortByChange;
+  final void Function(SortOrder?) onSortOrderChange;
+  final VoidCallback onClearSearch;
+
+  @override
+  Widget build(BuildContext context) {
+    final repos = nullableRepos;
+    final username = nullableUsername;
+    if (repos != null) {
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
+        sliver: SliverStickyHeader(
+          header: ColoredBox(
+            color: Theme.of(context).canvasColor,
+            child: Column(
+              children: [
+                RepositoryListHeader(
+                  sortBy: sortBy,
+                  sortOrder: sortOrder,
+                  onSearchQueryChange: onSearchQueryChange,
+                  onSortByChange: onSortByChange,
+                  onSortOrderChange: onSortOrderChange,
+                  searchTextEditingController: searchTextEditingController,
+                  onClearSearch: onClearSearch,
+                ),
+                Divider(),
+              ],
+            ),
           ),
-        ),
-        sliver: repos.isNotEmpty
-            ? SliverList.builder(
-                // padding: EdgeInsets.zero,
-                // keyboardDismissBehavior:
-                //     ScrollViewKeyboardDismissBehavior.onDrag,
-                itemCount: repos.length,
-                itemBuilder: (builderContext, index) {
-                  final repo = repos[index];
-                  return RepoCard(
-                    repo: repo,
-                    onClick: () {
-                      if (username == null) {
-                        Get.snackbar(
-                          "Navigating to repository",
-                          "Username not provided",
-                        );
-                        return;
-                      }
-                      Get.toNamed('/repo/$username/${repo.name}');
-                    },
-                  );
-                },
-              )
-            : SliverFillRemaining(
-                child: Center(child: Text(
-                  searchTextEditingController.text.isEmpty
-                  ? Strings.repositoryListEmptyMessage
-                  : Strings.noItemsMatchYourSearch,
-                  textAlign: TextAlign.center,
-                  )
+          sliver: repos.isNotEmpty
+              ? SliverList.builder(
+                  itemCount: repos.length,
+                  itemBuilder: (builderContext, index) {
+                    final repo = repos[index];
+                    return RepoCard(
+                      repo: repo,
+                      onClick: () {
+                        if (username == null) {
+                          Get.snackbar(
+                            "Navigating to repository",
+                            "Username not provided",
+                          );
+                          return;
+                        }
+                        Get.toNamed('/repo/$username/${repo.name}');
+                      },
+                    );
+                  },
+                )
+              : SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      searchTextEditingController.text.isEmpty
+                          ? Strings.repositoryListEmptyMessage
+                          : Strings.noItemsMatchYourSearch,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-              ),
-      ),
+                ),
+        ),
+      );
+    }
+
+    return SliverFillRemaining(
+      child: Center(child: Text("Repository list is empty.")),
     );
   }
-
-  return Center(child: Text("Repository list is empty."));
 }
