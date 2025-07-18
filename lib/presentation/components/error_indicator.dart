@@ -43,26 +43,34 @@ class ErrorIndicator extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            spacing: 8.0,
+            spacing: Dimens.paddingSmall,
             children: [
               Image(
                 image: image,
-                width: min(200, constraints.maxWidth / 2),
-                errorBuilder: (context, error, stackTrace) => Tooltip(message: "Failed to load image.", child: Icon(Icons.broken_image_outlined, semanticLabel: "Failed to load image.",)),
+                width: min(Dimens.widthSmall, constraints.maxWidth / 2),
+                errorBuilder: (context, error, stackTrace) => Tooltip(
+                  message: Strings.failedToLoadImageErrorMessage,
+                  child: Icon(
+                    Icons.broken_image_outlined,
+                    semanticLabel: Strings.failedToLoadImageErrorMessage,
+                  ),
+                ),
               ),
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).hintColor,
+                ),
               ),
               if (canRetry) ...[
-                SizedBox(height: 16.0),
-                OutlinedButton(onPressed: onRetry, child: Text("Retry")),
+                SizedBox(height: Dimens.paddingMedium),
+                OutlinedButton(onPressed: onRetry, child: Text(Strings.retryButtonText)),
               ],
             ],
           ),

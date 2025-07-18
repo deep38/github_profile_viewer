@@ -9,6 +9,7 @@ import 'package:github_profile_viewer/presentation/pages/profile_page.dart';
 import 'package:github_profile_viewer/presentation/pages/repository_page.dart';
 import 'package:github_profile_viewer/presentation/pages/welcome_page.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
+import 'package:github_profile_viewer/utils/routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/', page: () => WelcomePage()),
 
         GetPage(
-          name: '/user/:username',
+          name: Routes.profilePagePath,
           page: () => ProfilePage(),
           binding: BindingsBuilder(() {
             Get.lazyPut<GithubDataService>(() => GithubApiService());
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
         ),
 
         GetPage(
-          name: '/repo/:username/:reponame',
+          name: Routes.repositoryPagePath,
           page: () => RepositoryPage(),
           binding: BindingsBuilder(() {
             Get.lazyPut<GithubDataService>(() => GithubApiService());

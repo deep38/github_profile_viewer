@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 
 class SectionWidget extends StatelessWidget {
   const SectionWidget({super.key, required this.title, required this.child});
@@ -20,7 +21,7 @@ class SectionWidget extends StatelessWidget {
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
-          Padding(padding: const EdgeInsets.all(8.0), child: child),
+          Padding(padding: const EdgeInsets.all(Dimens.paddingSmall), child: child),
         ],
       ),
     );

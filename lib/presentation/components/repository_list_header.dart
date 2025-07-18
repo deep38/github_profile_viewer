@@ -32,7 +32,7 @@ class RepositoryListHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                "Public repositories",
+                Strings.publicReposLabel,
                 style: Theme.of(
                   context,
                 ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -65,10 +65,10 @@ class RepositoryListHeader extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 4),
+        SizedBox(height: Dimens.paddingXSmall),
         SearchBar(
           padding: WidgetStatePropertyAll(
-            EdgeInsets.symmetric(vertical: 4, horizontal: Dimens.paddingSmall),
+            EdgeInsets.symmetric(vertical: Dimens.paddingXSmall, horizontal: Dimens.paddingSmall),
           ),
           elevation: WidgetStatePropertyAll(0),
           onChanged: (v) {

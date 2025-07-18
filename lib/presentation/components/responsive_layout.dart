@@ -28,7 +28,7 @@ class ResponsiveLayout extends StatelessWidget {
           flex: bodyFlex,
           child: bodyBuilder(constraints),
         );
-        return constraints.maxWidth > Dimens.mediumWidth
+        return constraints.maxWidth > Dimens.widthMedium
             ? Row(children: [finalHeader, finalBody])
             : Column(children: [finalHeader, finalBody]);
       },

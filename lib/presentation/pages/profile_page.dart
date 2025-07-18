@@ -12,16 +12,17 @@ import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
 import 'package:github_profile_viewer/presentation/model/user.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
+import 'package:github_profile_viewer/utils/routes.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   void _loadUserData(ProfilePageController? controller) {
-    final username = Get.parameters['username'];
+    final username = Get.parameters[Strings.parameterUsername];
     if (username != null) {
       controller?.loadUserData(username);
     } else {
-      controller?.error.value = Exception("Username not provided");
+      controller?.error.value = Exception(Strings.userNameNotProvidedErrorMessage);
       controller?.userLoadingState.value = LoadingState.error;
     }
   }
@@ -82,7 +83,7 @@ class ProfilePage extends StatelessWidget {
                   }
                 );
 
-                return constraints.maxWidth > Dimens.mediumWidth
+                return constraints.maxWidth > Dimens.widthMedium
                     ? Row(
                         children: [
                           Flexible(
@@ -121,7 +122,7 @@ class _UserProfileHeader extends StatelessWidget {
           children: [
             CircleAvatar(
               foregroundImage: NetworkImage(user.avatarUrl),
-              radius: 56,
+              radius: Dimens.radiusMedium,
             ),
 
             if (user.name != null)
@@ -148,20 +149,20 @@ class _UserProfileHeader extends StatelessWidget {
               elevation: 0,
               color: context.theme.colorScheme.secondaryContainer,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(Dimens.paddingMedium),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     StatWidget(
-                      title: "Followers",
+                      title: Strings.followersLabel,
                       value: user.followers.toString(),
                     ),
                     StatWidget(
-                      title: "Followings",
+                      title: Strings.followingLabel,
                       value: user.following.toString(),
                     ),
                     StatWidget(
-                      title: "Public repos",
+                      title: Strings.publicReposLabel,
                       value: user.publicRepos.toString(),
                     ),
                   ],
@@ -176,7 +177,7 @@ class _UserProfileHeader extends StatelessWidget {
                 elevation: 0,
                 color: context.theme.colorScheme.secondaryContainer,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(Dimens.paddingSmall),
                   child: SectionWidget(
                     title: 'About',
                     child: Text(
@@ -196,7 +197,7 @@ class _UserProfileHeader extends StatelessWidget {
         ),
       );
     } else {
-      return Center(child: Text("Error: User is null"));
+      return Center(child: Text(Strings.userIsNullErrorMessage));
     }
   }
 }
@@ -265,7 +266,7 @@ class _RepoistoryList extends StatelessWidget {
                           );
                           return;
                         }
-                        Get.toNamed('/repo/$username/${repo.name}');
+                        Get.toNamed(Routes.repositoryPage(username, repo.name));
                       },
                     );
                   },
@@ -274,7 +275,7 @@ class _RepoistoryList extends StatelessWidget {
                   child: Center(
                     child: Text(
                       searchTextEditingController.text.isEmpty
-                          ? Strings.repositoryListEmptyMessage
+                          ? Strings.repositoryListNotFoundMessage
                           : Strings.noItemsMatchYourSearch,
                       textAlign: TextAlign.center,
                     ),
@@ -285,7 +286,7 @@ class _RepoistoryList extends StatelessWidget {
     }
 
     return SliverFillRemaining(
-      child: Center(child: Text("Repository list is empty.")),
+      child: Center(child: Text(Strings.emptyListMessage)),
     );
   }
 }

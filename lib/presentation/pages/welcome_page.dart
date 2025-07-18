@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:github_profile_viewer/presentation/components/responsive_layout.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/extensions.dart';
+import 'package:github_profile_viewer/utils/routes.dart';
 
 class WelcomePage extends StatelessWidget {
   WelcomePage({super.key});
@@ -17,7 +18,7 @@ class WelcomePage extends StatelessWidget {
 
   void onSubmit() {
     if (_formKey.currentState?.validate() == true) {
-      Get.toNamed('/user/${_usernameTextEditingController.value.text.trim()}');
+      Get.toNamed(Routes.profilePage(_usernameTextEditingController.text));
     }
   }
 
@@ -39,7 +40,6 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final isLandscape = MediaQuery.of(context).size.aspectRatio > 1;
     return Scaffold(
       body: ResponsiveLayout(
         headerFlex: 3,
@@ -72,7 +72,7 @@ class WelcomePage extends StatelessWidget {
           ],
         ),
         bodyBuilder: (constraints) {
-          final isLargeWidth = constraints.maxWidth > Dimens.mediumWidth;
+          final isLargeWidth = constraints.maxWidth > Dimens.widthMedium;
 
           final form = Padding(
             padding: const EdgeInsets.symmetric(
@@ -83,7 +83,7 @@ class WelcomePage extends StatelessWidget {
               children: [
                 SizedBox(height: Dimens.paddingLarge),
                 _FormHeading(),
-                SizedBox(height: Dimens.paddingLarge * 2),
+                SizedBox(height: Dimens.paddingXLarge),
                 TextFormField(
                   key: Key(Strings.welcomePageUserNameFieldKey),
                   controller: _usernameTextEditingController,
@@ -95,10 +95,10 @@ class WelcomePage extends StatelessWidget {
                     border: OutlineInputBorder(),
                     constraints: BoxConstraints(
                       minWidth: min(
-                        Dimens.mediumWidth,
-                        max(MediaQuery.of(context).size.width, 36.0),
+                        Dimens.widthMedium,
+                        max(MediaQuery.of(context).size.width, Dimens.sizeMedium),
                       ),
-                      maxWidth: Dimens.mediumWidth,
+                      maxWidth: Dimens.widthMedium,
                     ),
                   ),
 
@@ -117,7 +117,7 @@ class WelcomePage extends StatelessWidget {
                     fixedSize: Size.fromWidth(
                       MediaQuery.of(context).size.width,
                     ),
-                    maximumSize: Size.fromWidth(Dimens.mediumWidth),
+                    maximumSize: Size.fromWidth(Dimens.widthMedium),
                   ),
                   child: const Text(Strings.viewProfileButtonText),
                 ),
@@ -158,7 +158,7 @@ class _FormHeading extends StatelessWidget {
               textStyle: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-              speed: Duration(milliseconds: 100),
+              speed: Duration(milliseconds: Time.fastestMiliseconds),
             ),
 
             TyperAnimatedText(
@@ -166,7 +166,7 @@ class _FormHeading extends StatelessWidget {
               textStyle: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-              speed: Duration(milliseconds: 100),
+              speed: Duration(milliseconds: Time.fastestMiliseconds),
             ),
 
             TyperAnimatedText(
@@ -174,7 +174,7 @@ class _FormHeading extends StatelessWidget {
               textStyle: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-              speed: Duration(milliseconds: 100),
+              speed: Duration(milliseconds: Time.fastestMiliseconds),
             ),
           ],
         ),

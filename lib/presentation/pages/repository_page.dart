@@ -14,13 +14,13 @@ class RepositoryPage extends StatelessWidget {
   const RepositoryPage({super.key});
 
   void _loadRepositoryData(RepositoryPageController? controller) {
-    final username = Get.parameters['username'];
-    final reponame = Get.parameters['reponame'];
+    final username = Get.parameters[Strings.parameterUsername];
+    final reponame = Get.parameters[Strings.parameterReponame];
     if (username != null && reponame != null) {
       controller?.loadRepository(username, reponame);
     } else {
       controller?.error.value = Exception(
-        "Username or Repository name not provided",
+        Strings.userNameOrRepositoryNameNotProvidedErrorMessage,
       );
       controller?.loadingState.value = LoadingState.error;
     }
@@ -72,7 +72,7 @@ class _RepositoryInfo extends StatelessWidget {
       ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor);
 
       return ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: Dimens.mediumWidth),
+        constraints: BoxConstraints(maxWidth: Dimens.widthMedium),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -82,7 +82,7 @@ class _RepositoryInfo extends StatelessWidget {
                   GestureDetector(
                     onTap: () => openUrl(repo.owner.htmlUrl),
                     child: CircleAvatar(
-                      radius: 50,
+                      radius: Dimens.radiusMedium,
                       foregroundImage: NetworkImage(repo.owner.avatarUrl),
                     ),
                   ),
@@ -104,18 +104,20 @@ class _RepositoryInfo extends StatelessWidget {
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ),
-                            SizedBox(width: 4),
+                            SizedBox(width: Dimens.paddingXSmall),
                             Container(
                               decoration: BoxDecoration(
                                 border: BoxBorder.all(
                                   color: Colors.grey,
                                   width: 1,
                                 ),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(
+                                  Dimens.borderRadiusMedium,
+                                ),
                               ),
                               padding: EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
+                                horizontal: Dimens.paddingXSmall,
+                                vertical: Dimens.paddingXXSmall,
                               ),
                               child: Text(
                                 repo.visibility.toUpperCase(),
@@ -125,7 +127,7 @@ class _RepositoryInfo extends StatelessWidget {
                           ],
                         ),
 
-                        SizedBox(height: 2),
+                        SizedBox(height: Dimens.paddingXXSmall),
                         Text(
                           "Updated on ${repo.updatedAt.formatToMMMMDDYYYY()}",
                           style: subtitleTextStyle,
@@ -208,6 +210,6 @@ class _RepositoryInfo extends StatelessWidget {
       );
     }
 
-    return Center(child: Text("Repository is null"));
+    return Center(child: Text(Strings.nullRepositoryMessage));
   }
 }

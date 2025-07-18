@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:github_profile_viewer/utils/constants.dart';
 
 class InfoChip extends StatelessWidget {
   const InfoChip({super.key, required this.icon, required this.label, this.tooltip});
@@ -13,7 +14,7 @@ class InfoChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           icon,
-          SizedBox(width: 4,),
+          SizedBox(width: Dimens.paddingXSmall,),
           label
         ],
       );

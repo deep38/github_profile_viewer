@@ -17,7 +17,6 @@ class RepoCard extends StatelessWidget {
     ).textTheme.bodySmall?.copyWith(color: subtitleColor);
     return Card(
       elevation: 0.3,
-      clipBehavior: Clip.hardEdge,
       child: InkWell(
         onTap: onClick,
         child: Padding(
