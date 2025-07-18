@@ -82,7 +82,7 @@ class ProfilePage extends StatelessWidget {
                   }
                 );
 
-                return constraints.maxWidth > 500
+                return constraints.maxWidth > Dimens.mediumWidth
                     ? Row(
                         children: [
                           Flexible(

@@ -30,5 +30,5 @@ sealed class Dimens {
   static const paddingMedium = 16.0;
   static const paddingLarge = 32.0;
 
-  static const mediumWidth = 500.0;
+  static const mediumWidth = 600.0;
 }
