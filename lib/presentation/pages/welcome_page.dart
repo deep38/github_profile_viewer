@@ -158,7 +158,7 @@ class _FormHeading extends StatelessWidget {
               textStyle: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-              speed: Duration(milliseconds: Time.fastestMiliseconds),
+              speed: Duration(milliseconds: Time.millisecondsFast),
             ),
 
             TyperAnimatedText(
@@ -166,7 +166,7 @@ class _FormHeading extends StatelessWidget {
               textStyle: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-              speed: Duration(milliseconds: Time.fastestMiliseconds),
+              speed: Duration(milliseconds: Time.millisecondsFast),
             ),
 
             TyperAnimatedText(
@@ -174,7 +174,7 @@ class _FormHeading extends StatelessWidget {
               textStyle: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-              speed: Duration(milliseconds: Time.fastestMiliseconds),
+              speed: Duration(milliseconds: Time.millisecondsFast),
             ),
           ],
         ),

@@ -6,6 +6,7 @@ import 'package:github_profile_viewer/presentation/components/loading_state_widg
 import 'package:github_profile_viewer/presentation/components/repo_card.dart';
 import 'package:github_profile_viewer/presentation/components/repository_list_header.dart';
 import 'package:github_profile_viewer/presentation/components/section_widget.dart';
+import 'package:github_profile_viewer/presentation/components/shimmer_loading.dart';
 import 'package:github_profile_viewer/presentation/components/stat_widget.dart';
 import 'package:github_profile_viewer/presentation/controllers/profile_page_controller.dart';
 import 'package:github_profile_viewer/presentation/model/repo_mini.dart';
@@ -22,7 +23,9 @@ class ProfilePage extends StatelessWidget {
     if (username != null) {
       controller?.loadUserData(username);
     } else {
-      controller?.error.value = Exception(Strings.userNameNotProvidedErrorMessage);
+      controller?.error.value = Exception(
+        Strings.userNameNotProvidedErrorMessage,
+      );
       controller?.userLoadingState.value = LoadingState.error;
     }
   }
@@ -39,12 +42,13 @@ class ProfilePage extends StatelessWidget {
 
         builder: (controller) {
           return LoadingStateWidget(
+            enableTransition: true,
             state: controller.userLoadingState.value,
             error: ErrorIndicator(
               error: controller.error.value,
               onRetry: () => _loadUserData(controller),
             ),
-
+            loading: _ProfilePageLoading(),
             success: LayoutBuilder(
               builder: (_, constraints) {
                 final headerSliver = SliverToBoxAdapter(
@@ -54,34 +58,33 @@ class ProfilePage extends StatelessWidget {
                   ),
                 );
 
-                final bodySliver = Obx(
-                  () {
-                    return LoadingStateWidget(
-                      state: controller.reposLoadingState.value,
-                      error: SliverToBoxAdapter(
-                        child: ErrorIndicator(
-                          error: controller.error.value,
-                          onRetry: controller.reloadRepos,
-                        ),
+                final bodySliver = Obx(() {
+                  return LoadingStateWidget(
+                    state: controller.reposLoadingState.value,
+                    error: SliverToBoxAdapter(
+                      child: ErrorIndicator(
+                        error: controller.error.value,
+                        onRetry: controller.reloadRepos,
                       ),
-                      initial: SliverToBoxAdapter(),
-                      loading: SliverFillRemaining(
-                        child: Center(child: CircularProgressIndicator.adaptive()),
-                      ),
-                      success: _RepoistoryList(
-                        nullableUsername: controller.user.value?.username,
-                        nullableRepos: controller.repos.value,
-                        sortBy: controller.currentSortBy.value,
-                        sortOrder: controller.currentSortOrder.value,
-                        searchTextEditingController: controller.searchTextEditingController,
-                        onSearchQueryChange: controller.filterRepos,
-                        onSortByChange: controller.onSortByChange,
-                        onSortOrderChange: controller.onSortOrderChange,
-                        onClearSearch: controller.onClearSearch,
-                      ),
-                    );
-                  }
-                );
+                    ),
+                    initial: SliverToBoxAdapter(),
+                    loading: SliverFillRemaining(
+                      child: SingleChildScrollView(child: Shimmer(child: _RepositoryListLoading())),
+                    ),
+                    success: _RepoistoryList(
+                      nullableUsername: controller.user.value?.username,
+                      nullableRepos: controller.repos.value,
+                      sortBy: controller.currentSortBy.value,
+                      sortOrder: controller.currentSortOrder.value,
+                      searchTextEditingController:
+                          controller.searchTextEditingController,
+                      onSearchQueryChange: controller.filterRepos,
+                      onSortByChange: controller.onSortByChange,
+                      onSortOrderChange: controller.onSortOrderChange,
+                      onClearSearch: controller.onClearSearch,
+                    ),
+                  );
+                });
 
                 return constraints.maxWidth > Dimens.widthMedium
                     ? Row(
@@ -104,6 +107,62 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
+class _ProfilePageLoading extends StatelessWidget {
+  const _ProfilePageLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    final header = _UserProfileHeaderLayout(
+      avatar: ShimmerCircleAvatar(radius: Dimens.radiusMedium),
+      name: ShimmerLine(width: Dimens.lineWidthMedium),
+      username: ShimmerLine(height: Dimens.lineHeightSmall, width: Dimens.lineWidthSmall),
+      stats: ShimmerLine(
+        height: Dimens.lineHeightXLarge,
+        borderRadius: Dimens.borderRadiusMedium,
+      ),
+      bio: ShimmerLine(
+        height: Dimens.lineHeightXXLarge,
+        borderRadius: Dimens.borderRadiusMedium,
+      ),
+    );
+
+    final body = _RepositoryListLoading();
+    return Shimmer(
+      child: LayoutBuilder(
+        builder: (_, constraints) {
+          return constraints.maxWidth > Dimens.widthMedium
+              ? Row(
+                  children: [
+                    Expanded(child: SingleChildScrollView(child: header)),
+                    Expanded(child: SingleChildScrollView(child: body)),
+                  ],
+                )
+              : SingleChildScrollView(child: Column(children: [header, body]));
+        },
+      ),
+    );
+  }
+}
+
+class _RepositoryListLoading extends StatelessWidget {
+  const _RepositoryListLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ShimmerRepositoryListHeader(),
+          Divider(),
+          ...List.filled(2, ShimmerCard(height: Dimens.lineHeightXXLarge)),
+        ],
+      ),
+    );
+  }
+}
+
 class _UserProfileHeader extends StatelessWidget {
   const _UserProfileHeader({required this.nullableUser, required this.openUrl});
 
@@ -114,66 +173,54 @@ class _UserProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = nullableUser;
     if (user != null) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              foregroundImage: NetworkImage(user.avatarUrl),
-              radius: Dimens.radiusMedium,
-            ),
-
-            if (user.name != null)
-              Text(
+      return _UserProfileHeaderLayout(
+        avatar: CircleAvatar(
+          foregroundImage: NetworkImage(user.avatarUrl),
+          radius: Dimens.radiusMedium,
+        ),
+        name: user.name != null
+            ? Text(
                 user.name!,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-
-            GestureDetector(
-              onTap: () => openUrl(user.profileLink),
-              child: Text(
-                "@${user.username}",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).hintColor,
+              )
+            : null,
+        username: GestureDetector(
+          onTap: () => openUrl(user.profileLink),
+          child: Text(
+            "@${user.username}",
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+          ),
+        ),
+        stats: Card(
+          elevation: 0,
+          color: context.theme.colorScheme.secondaryContainer,
+          child: Padding(
+            padding: const EdgeInsets.all(Dimens.paddingMedium),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                StatWidget(
+                  title: Strings.followersLabel,
+                  value: user.followers.toString(),
                 ),
-              ),
-            ),
-
-            const SizedBox(height: Dimens.paddingSmall),
-
-            Card(
-              elevation: 0,
-              color: context.theme.colorScheme.secondaryContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(Dimens.paddingMedium),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    StatWidget(
-                      title: Strings.followersLabel,
-                      value: user.followers.toString(),
-                    ),
-                    StatWidget(
-                      title: Strings.followingLabel,
-                      value: user.following.toString(),
-                    ),
-                    StatWidget(
-                      title: Strings.publicReposLabel,
-                      value: user.publicRepos.toString(),
-                    ),
-                  ],
+                StatWidget(
+                  title: Strings.followingLabel,
+                  value: user.following.toString(),
                 ),
-              ),
+                StatWidget(
+                  title: Strings.publicReposLabel,
+                  value: user.publicRepos.toString(),
+                ),
+              ],
             ),
-
-            if (user.bio != null) ...[
-              const SizedBox(height: Dimens.paddingSmall),
-
-              Card(
+          ),
+        ),
+        bio: user.bio != null
+            ? Card(
                 elevation: 0,
                 color: context.theme.colorScheme.secondaryContainer,
                 child: Padding(
@@ -189,12 +236,8 @@ class _UserProfileHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ],
-
-            Divider(),
-          ],
-        ),
+              )
+            : null,
       );
     } else {
       return Center(child: Text(Strings.userIsNullErrorMessage));
@@ -202,6 +245,51 @@ class _UserProfileHeader extends StatelessWidget {
   }
 }
 
+class _UserProfileHeaderLayout extends StatelessWidget {
+  const _UserProfileHeaderLayout({
+    required this.avatar,
+    required this.name,
+    required this.username,
+    required this.stats,
+    required this.bio,
+  });
+
+  final Widget avatar;
+  final Widget? name;
+  final Widget username;
+  final Widget stats;
+  final Widget? bio;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingMedium),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          avatar,
+
+          ?name,
+
+          username,
+
+          const SizedBox(height: Dimens.paddingSmall),
+
+          stats,
+
+          if (bio != null) ...[
+            const SizedBox(height: Dimens.paddingSmall),
+
+            ?bio,
+          ],
+
+          Divider(),
+        ],
+      ),
+    );
+  }
+}
 
 class _RepoistoryList extends StatelessWidget {
   const _RepoistoryList({
