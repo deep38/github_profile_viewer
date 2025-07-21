@@ -10,6 +10,7 @@ import 'package:github_profile_viewer/presentation/model/repository.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 import 'package:github_profile_viewer/utils/extensions.dart';
+import 'package:github_profile_viewer/utils/theme_extensions.dart';
 
 class RepositoryPage extends StatelessWidget {
   const RepositoryPage({super.key});
@@ -180,14 +181,28 @@ class _RepositoryInfoLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer(
+    
+    return Shimmer.fromColor(
+      baseColor: context.theme
+          .extension<ShimmerEffectThemeExtension>()
+          ?.baseColor,
+      highlightColor: context.theme
+          .extension<ShimmerEffectThemeExtension>()
+          ?.highlightColor,
+
       child: _RepositoryInfoLayout(
         avatar: ShimmerCircleAvatar(radius: Dimens.radiusMedium),
-        name: ShimmerLine(width: Dimens.lineWidthLarge, height: Dimens.lineHeightMedium),
-        visibilityInfo: ShimmerLine(width: Dimens.lineWidthSmall, height: Dimens.lineHeightMedium,),
-        updatedDateInfo: ShimmerLine( width: Dimens.lineWidthXXLarge, ),
+        name: ShimmerLine(
+          width: Dimens.lineWidthLarge,
+          height: Dimens.lineHeightMedium,
+        ),
+        visibilityInfo: ShimmerLine(
+          width: Dimens.lineWidthSmall,
+          height: Dimens.lineHeightMedium,
+        ),
+        updatedDateInfo: ShimmerLine(width: Dimens.lineWidthXXLarge),
         description: ShimmerCard(),
-        otherDetails: ShimmerCard(height: Dimens.lineHeightXXLarge,),
+        otherDetails: ShimmerCard(height: Dimens.lineHeightXXLarge),
       ),
     );
   }

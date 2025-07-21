@@ -38,7 +38,6 @@ class ShimmerLine extends StatelessWidget {
   }
 }
 
-
 class ShimmerCard extends StatelessWidget {
   const ShimmerCard({
     super.key,
@@ -96,20 +95,35 @@ class Shimmer extends StatefulWidget {
 
   const Shimmer({
     super.key,
-    this.linearGradient = const LinearGradient(
-      colors: [Color(0xFFEBEBF4), Color(0xFFF4F4F4), Color(0xFFEBEBF4)],
-      stops: [0.1, 0.5, 0.9],
-      begin: Alignment(0, -1),
-      end: Alignment(0, 1),
-      tileMode: TileMode.clamp,
-    ),
+    required this.linearGradient,
     this.child,
-    this.period = const Duration(seconds: 2),
+    this.period,
   });
+
+  static Shimmer fromColor({
+    required Color? baseColor,
+    required Color? highlightColor,
+    Widget? child,
+    Duration? period,
+  }) {
+    final finalBaseColor = baseColor ?? const Color(0xFFE8E7E7);
+    final finalHghlightColor = highlightColor ?? Colors.white;
+    return Shimmer(
+      linearGradient: LinearGradient(
+        colors: [finalBaseColor, finalHghlightColor, finalBaseColor],
+        stops: [0, 0.5, 1],
+        begin: Alignment(0, -1),
+        end: Alignment(0, 1),
+        tileMode: TileMode.clamp,
+      ),
+      period: period,
+      child: child,
+    );
+  }
 
   final LinearGradient linearGradient;
   final Widget? child;
-  final Duration period;
+  final Duration? period;
 
   @override
   ShimmerState createState() => ShimmerState();
@@ -148,7 +162,11 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     super.initState();
 
     _shimmerController = AnimationController.unbounded(vsync: this)
-      ..repeat(min: -0.5, max: 1.5, period: widget.period);
+      ..repeat(
+        min: -0.5,
+        max: 1.5,
+        period: widget.period ?? const Duration(seconds: 2),
+      );
   }
 
   @override
@@ -217,9 +235,11 @@ class _ShimmerLoadingState extends State<ShimmerLoading> {
     }
     final shimmerSize = shimmer.size;
     final gradient = shimmer.gradient;
-    final offsetWithinShimmer = context.findRenderObject() != null ? shimmer.getDescendantOffset(
-      descendant: context.findRenderObject() as RenderBox,
-    ): Offset(0, 0);
+    final offsetWithinShimmer = context.findRenderObject() != null
+        ? shimmer.getDescendantOffset(
+            descendant: context.findRenderObject() as RenderBox,
+          )
+        : Offset(0, 0);
 
     return ShaderMask(
       blendMode: BlendMode.srcATop,
@@ -245,6 +265,10 @@ class _SlidingGradientTransform extends GradientTransform {
 
   @override
   Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    return Matrix4.translationValues( 0.0,(bounds.height * slidePercent) - 150, 0.0);
+    return Matrix4.translationValues(
+      0.0,
+      (bounds.height * slidePercent) - 150,
+      0.0,
+    );
   }
 }

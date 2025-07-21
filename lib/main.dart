@@ -10,6 +10,7 @@ import 'package:github_profile_viewer/presentation/pages/repository_page.dart';
 import 'package:github_profile_viewer/presentation/pages/welcome_page.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/routes.dart';
+import 'package:github_profile_viewer/utils/theme_extensions.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,8 +26,22 @@ class MyApp extends StatelessWidget {
       title: Strings.appName,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        extensions: [
+          ShimmerEffectThemeExtension(
+            baseColor: Color(0xffEBEBEB),
+            highlightColor: Colors.white,
+          ),
+        ],
       ),
-      darkTheme: ThemeData.dark(),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: Colors.deepPurple),
+        extensions: [
+          ShimmerEffectThemeExtension(
+            baseColor: Color(0xff333333),
+            highlightColor: Color(0xff666666),
+          ),
+        ],
+      ),
       initialRoute: '/',
       getPages: [
         GetPage(name: '/', page: () => WelcomePage()),
@@ -50,7 +65,9 @@ class MyApp extends StatelessWidget {
           page: () => RepositoryPage(),
           binding: BindingsBuilder(() {
             Get.lazyPut<GithubDataService>(() => GithubApiService());
-            Get.lazyPut<GithubDataRepository>(() => GithubDataRepository(Get.find<GithubDataService>()));
+            Get.lazyPut<GithubDataRepository>(
+              () => GithubDataRepository(Get.find<GithubDataService>()),
+            );
             Get.lazyPut<RepositoryPageController>(
               () => RepositoryPageController(Get.find<GithubDataRepository>()),
             );

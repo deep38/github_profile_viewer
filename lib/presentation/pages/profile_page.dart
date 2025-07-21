@@ -14,6 +14,7 @@ import 'package:github_profile_viewer/presentation/model/user.dart';
 import 'package:github_profile_viewer/utils/constants.dart';
 import 'package:github_profile_viewer/utils/enums.dart';
 import 'package:github_profile_viewer/utils/routes.dart';
+import 'package:github_profile_viewer/utils/theme_extensions.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -69,7 +70,17 @@ class ProfilePage extends StatelessWidget {
                     ),
                     initial: SliverToBoxAdapter(),
                     loading: SliverFillRemaining(
-                      child: SingleChildScrollView(child: Shimmer(child: _RepositoryListLoading())),
+                      child: SingleChildScrollView(
+                        child: Shimmer.fromColor(
+                          baseColor: context.theme
+                              .extension<ShimmerEffectThemeExtension>()
+                              ?.baseColor,
+                          highlightColor: context.theme
+                              .extension<ShimmerEffectThemeExtension>()
+                              ?.highlightColor,
+                          child: _RepositoryListLoading(),
+                        ),
+                      ),
                     ),
                     success: _RepoistoryList(
                       nullableUsername: controller.user.value?.username,
@@ -115,7 +126,10 @@ class _ProfilePageLoading extends StatelessWidget {
     final header = _UserProfileHeaderLayout(
       avatar: ShimmerCircleAvatar(radius: Dimens.radiusMedium),
       name: ShimmerLine(width: Dimens.lineWidthMedium),
-      username: ShimmerLine(height: Dimens.lineHeightSmall, width: Dimens.lineWidthSmall),
+      username: ShimmerLine(
+        height: Dimens.lineHeightSmall,
+        width: Dimens.lineWidthSmall,
+      ),
       stats: ShimmerLine(
         height: Dimens.lineHeightXLarge,
         borderRadius: Dimens.borderRadiusMedium,
@@ -127,7 +141,13 @@ class _ProfilePageLoading extends StatelessWidget {
     );
 
     final body = _RepositoryListLoading();
-    return Shimmer(
+    return Shimmer.fromColor(
+      baseColor: context.theme
+          .extension<ShimmerEffectThemeExtension>()
+          ?.baseColor,
+      highlightColor: context.theme
+          .extension<ShimmerEffectThemeExtension>()
+          ?.highlightColor,
       child: LayoutBuilder(
         builder: (_, constraints) {
           return constraints.maxWidth > Dimens.widthMedium
